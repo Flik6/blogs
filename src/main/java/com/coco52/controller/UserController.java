@@ -2,7 +2,6 @@ package com.coco52.controller;
 
 import com.coco52.entity.Account;
 import com.coco52.entity.LoginMsgVO;
-import com.coco52.entity.User;
 import com.coco52.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

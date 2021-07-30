@@ -7,7 +7,7 @@ import java.util.Date;
 
 @Data
 @TableName("users")
-public class User {
+public class MyUser {
     @TableId(type = IdType.AUTO)
     private Long Id;
     private String nickname;

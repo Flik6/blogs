@@ -6,5 +6,5 @@ import lombok.Data;
 public class LoginMsgVO {
     private Integer code;
     private String msg;
-    private User user;
+    private MyUser myUser;
 }
