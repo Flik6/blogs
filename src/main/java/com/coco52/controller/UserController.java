@@ -16,12 +16,13 @@ public class UserController {
 
     /**
      * 注册用户
+     *
      * @param account
-     * @return  注册用户  0 注册失败  1注册成功
+     * @return 注册用户  0 注册失败  1注册成功
      */
     @RequestMapping("/register")
     @ResponseBody
-    public int register(Account account){
+    public int register(Account account) {
         System.out.println(account);
         int i = userService.registerUser(account);
         return i;
@@ -29,18 +30,48 @@ public class UserController {
 
     /**
      * 登录
+     *
      * @param account
-     * @return   1.null   2.user
+     * @return 1.null   2.user
      * null：
      */
     @RequestMapping("/login")
     @ResponseBody
-    public RespMsg login(Account account){
+    public RespMsg login(Account account) {
         RespMsg msg = userService.login(account);
-        if (msg==null){
+        if (msg == null) {
             return msg;
         }
         return msg;
+    }
+
+    @RequestMapping("/showUsers")
+    @ResponseBody
+    public RespMsg showUser() {
+        return RespMsg.success("showUsers");
+    }
+
+    @RequestMapping("/addUser")
+    @ResponseBody
+    public RespMsg addUser() {
+        return RespMsg.success("addUser");
+    }
+
+    @RequestMapping("/updateUser")
+    @ResponseBody
+    public RespMsg updateUser() {
+        return RespMsg.success("updateUser");
+    }
+
+    @RequestMapping("/delUser")
+    @ResponseBody
+    public RespMsg delUser() {
+        return RespMsg.success("delUser");
+    }
+
+    @RequestMapping("/banUser")
+    public RespMsg banUser() {
+        return RespMsg.success("banUser");
     }
 
 
