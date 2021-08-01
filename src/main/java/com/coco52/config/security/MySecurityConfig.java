@@ -1,7 +1,6 @@
-package com.coco52.config;
+package com.coco52.config.security;
 
 
-import com.coco52.security.MyAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;

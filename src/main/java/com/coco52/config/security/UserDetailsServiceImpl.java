@@ -1,4 +1,4 @@
-package com.coco52.security;
+package com.coco52.config.security;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.coco52.entity.Account;
@@ -44,9 +44,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             authorities.add(new SimpleGrantedAuthority(roles.get(i).getRoleName()));
         }
         User user = new User(account.getUsername(), account.getPassword(),authorities);
-
-
-
         return user;
     }
 }

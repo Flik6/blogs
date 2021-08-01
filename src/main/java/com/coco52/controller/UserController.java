@@ -1,7 +1,7 @@
 package com.coco52.controller;
 
 import com.coco52.entity.Account;
-import com.coco52.entity.LoginMsgVO;
+import com.coco52.entity.VO.RespMsg;
 import com.coco52.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -35,8 +35,8 @@ public class UserController {
      */
     @RequestMapping("/login")
     @ResponseBody
-    public LoginMsgVO login(Account account){
-        LoginMsgVO msg = userService.login(account);
+    public RespMsg login(Account account){
+        RespMsg msg = userService.login(account);
         if (msg==null){
             return msg;
         }

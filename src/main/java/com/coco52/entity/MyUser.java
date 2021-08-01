@@ -21,4 +21,13 @@ public class MyUser {
     private Integer age;
     private Integer state;
     private String uuid;
+    @TableField(fill = FieldFill.INSERT)
+    private Integer isAvailable;
+    @TableField(fill = FieldFill.INSERT)
+    private Integer isExpires;
+    @TableField(fill = FieldFill.INSERT)
+    private Integer isLock;
+    private Date lastLoginTime;
+
+
 }

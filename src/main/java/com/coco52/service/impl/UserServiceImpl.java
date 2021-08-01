@@ -2,20 +2,16 @@ package com.coco52.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.coco52.entity.*;
+import com.coco52.entity.VO.RespMsg;
 import com.coco52.mapper.AccountMapper;
 import com.coco52.mapper.RoleAccountMapper;
 import com.coco52.mapper.RoleMapper;
 import com.coco52.mapper.UserMapper;
 import com.coco52.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -65,31 +61,31 @@ public class UserServiceImpl implements UserService {
      * 2  用户密码错误
      */
     @Override
-    public LoginMsgVO login(Account loginAccount) {
-        LoginMsgVO loginMsgVO = new LoginMsgVO();
+    public RespMsg login(Account loginAccount) {
+        RespMsg respMsg = new RespMsg();
         QueryWrapper<Account> accountWrapper = new QueryWrapper<>();
         Account account = accountMapper.selectOne(accountWrapper.eq("username", loginAccount.getUsername()));
         if (account == null) {
-            loginMsgVO.setCode(0);
-            loginMsgVO.setMsg("用户尚未注册！请注册之后在尝试登录");
-            loginMsgVO.setMyUser(null);
-            return loginMsgVO;
+            respMsg.setCode(0);
+            respMsg.setMsg("用户尚未注册！请注册之后在尝试登录");
+            respMsg.setData(null);
+            return respMsg;
         }
         accountWrapper.eq("password", loginAccount.getPassword());
         Account account1 = accountMapper.selectOne(accountWrapper);
         if (account1 == null) {
-            loginMsgVO.setCode(2);
-            loginMsgVO.setMsg("用户密码错误,请重新登录！");
-            loginMsgVO.setMyUser(null);
-            return loginMsgVO;
+            respMsg.setCode(2);
+            respMsg.setMsg("用户密码错误,请重新登录！");
+            respMsg.setData(null);
+            return respMsg;
         }
         QueryWrapper<MyUser> userWrapper = new QueryWrapper<>();
         userWrapper.eq("uuid", account.getUuid());
         MyUser myUser = userMapper.selectOne(userWrapper);
-        loginMsgVO.setCode(1);
-        loginMsgVO.setMsg("登陆成功！");
-        loginMsgVO.setMyUser(myUser);
-        return loginMsgVO;
+        respMsg.setCode(1);
+        respMsg.setMsg("登陆成功！");
+        respMsg.setData(myUser);
+        return respMsg;
     }
 
 

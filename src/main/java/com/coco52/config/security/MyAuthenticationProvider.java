@@ -1,5 +1,6 @@
-package com.coco52.security;
+package com.coco52.config.security;
 
+import com.coco52.config.security.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

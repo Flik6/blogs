@@ -30,4 +30,12 @@
    
 
    ![image-20210731230500586](https://i.loli.net/2021/07/31/Ube8LM6CqHrTXz7.png)
+   
+   - 2021-08-01
+   
+   > 1. 数据库架构图完成（下图）
+   >
+   >    ![](https://files.catbox.moe/skbjou.png)
+   >
+   > 2. 修改entity实体类，完成entity-table映射关系
 
