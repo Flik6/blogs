@@ -10,6 +10,7 @@
    * Hikari
    * JWT(2021-07-31 考虑添加)
    > 本段采用thymeleaf模板引擎开发，采用服务器渲染的方法，减少用户等待时长，优化用户体验，有效的减少前端渲染时长。
+   
 2. 开发日志
    + 2021-07-29
 
@@ -46,5 +47,11 @@
    >
    > 4. 完善代码注释
    
+   - 2021-08-03
    
+   >1. fix bug
+   >2. Set the user login permissions
+   >3. To optimize the front page
+   >4. ![](https://files.catbox.moe/bcjmpt.png)
+   >5. ![](https://files.catbox.moe/lkixz5.png)
 
