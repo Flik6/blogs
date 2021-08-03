@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface UserMapper extends BaseMapper<MyUser> {
 
+    @Select("SELECT u.* FROM `account` a,users u where a.uuid=u.uuid and a.username=#{username}")
+    MyUser selectUsersByUsername(String username);
 }

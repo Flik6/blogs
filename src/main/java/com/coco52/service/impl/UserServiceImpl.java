@@ -2,7 +2,7 @@ package com.coco52.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.coco52.entity.*;
-import com.coco52.entity.VO.RespMsg;
+import com.coco52.entity.RespMsg;
 import com.coco52.mapper.AccountMapper;
 import com.coco52.mapper.RoleAccountMapper;
 import com.coco52.mapper.RoleMapper;
@@ -33,12 +33,12 @@ public class UserServiceImpl implements UserService {
      * @param registerUser 用户上传进来的账号密码
      * @return 1注册成功  0注册失败  2账号已被注册
      */
-    public int registerUser(Account registerUser) {
+    public RespMsg registerUser(Account registerUser) {
         QueryWrapper<Account> wrapper = new QueryWrapper<>();
         wrapper.eq("username", registerUser.getUsername());
         Account account = accountMapper.selectOne(wrapper);
         if (account != null) {
-            return 2;  // 此处是判断账号是否已注册 如果已注册就返回2
+            return RespMsg.fail("账号已被注册！");
         }
         registerUser.setUuid(UUID.randomUUID().toString().replace("-", "").toLowerCase());
         registerUser.setPassword(new BCryptPasswordEncoder().encode(registerUser.getPassword()));
@@ -49,7 +49,11 @@ public class UserServiceImpl implements UserService {
         myUser.setValidateCode(UUID.randomUUID().toString().replace("-", "").toLowerCase());
         userMapper.insert(myUser);
         roleAccountMapper.insert(new RoleAccount(registerUser.getUuid(),5));
-        return flag;
+        if(flag==1){
+            return RespMsg.success("注册成功！");
+        }else {
+            return RespMsg.success("未知错误，请联系管理员！");
+        }
     }
 
     /**

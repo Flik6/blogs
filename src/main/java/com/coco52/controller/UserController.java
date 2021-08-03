@@ -1,14 +1,15 @@
 package com.coco52.controller;
 
 import com.coco52.entity.Account;
-import com.coco52.entity.VO.RespMsg;
+import com.coco52.entity.RespMsg;
 import com.coco52.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class UserController {
 
     @Autowired
@@ -21,11 +22,10 @@ public class UserController {
      * @return 注册用户  0 注册失败  1注册成功
      */
     @RequestMapping("/register")
-    @ResponseBody
-    public int register(Account account) {
+    public RespMsg register(Account account) {
         System.out.println(account);
-        int i = userService.registerUser(account);
-        return i;
+        RespMsg msg = userService.registerUser(account);
+        return msg;
     }
 
     /**
@@ -36,8 +36,8 @@ public class UserController {
      * null：
      */
     @RequestMapping("/login")
-    @ResponseBody
     public RespMsg login(Account account) {
+        System.out.println(account);
         RespMsg msg = userService.login(account);
         if (msg == null) {
             return msg;
@@ -46,25 +46,21 @@ public class UserController {
     }
 
     @RequestMapping("/showUsers")
-    @ResponseBody
     public RespMsg showUser() {
         return RespMsg.success("showUsers");
     }
 
     @RequestMapping("/addUser")
-    @ResponseBody
     public RespMsg addUser() {
         return RespMsg.success("addUser");
     }
 
     @RequestMapping("/updateUser")
-    @ResponseBody
     public RespMsg updateUser() {
         return RespMsg.success("updateUser");
     }
 
     @RequestMapping("/delUser")
-    @ResponseBody
     public RespMsg delUser() {
         return RespMsg.success("delUser");
     }
