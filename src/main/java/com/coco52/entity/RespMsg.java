@@ -1,6 +1,5 @@
-package com.coco52.entity.VO;
+package com.coco52.entity;
 
-import com.coco52.entity.MyUser;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

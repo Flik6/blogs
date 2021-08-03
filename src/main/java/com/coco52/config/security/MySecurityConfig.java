@@ -4,6 +4,7 @@ package com.coco52.config.security;
 import com.coco52.entity.Permissions;
 import com.coco52.mapper.PermissionsMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,6 +12,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import sun.security.util.Password;
 
 import java.util.List;
 
@@ -47,12 +51,16 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
             urlRegistry.antMatchers(p.getUrl()).hasAnyAuthority(p.getPermTag());
         });
 
-        http.formLogin().loginPage("/login.html").loginProcessingUrl("/login").defaultSuccessUrl("/login?success")
-                .permitAll().and().logout().logoutSuccessUrl("/login.html").and()
-                .authorizeRequests().antMatchers("/login", "/css/**", "/image/**", "/register.html", "/register", "/index.html?error").permitAll()
+        http.formLogin().defaultSuccessUrl("/main.html?success")
+                .permitAll().and().logout().logoutSuccessUrl("/login").and()
+                .authorizeRequests().antMatchers("/login", "/register.html", "/register", "/index.html?error").permitAll()
                 .antMatchers("/**").authenticated()
                 .and().csrf().disable();
 
+    }
+    @Bean
+    protected PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
     }
 
     @Override

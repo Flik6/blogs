@@ -22,11 +22,11 @@ public class MyUser {
     private Integer state;
     private String uuid;
     @TableField(fill = FieldFill.INSERT)
-    private Integer isAvailable;
+    private Boolean isAvailable;
     @TableField(fill = FieldFill.INSERT)
-    private Integer isExpires;
+    private Boolean isExpires;
     @TableField(fill = FieldFill.INSERT)
-    private Integer isLock;
+    private Boolean isLock;
     private Date lastLoginTime;
 
 
