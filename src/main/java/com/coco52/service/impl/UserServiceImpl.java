@@ -11,6 +11,7 @@ import com.coco52.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -33,6 +34,7 @@ public class UserServiceImpl implements UserService {
      * @param registerUser 用户上传进来的账号密码
      * @return 1注册成功  0注册失败  2账号已被注册
      */
+    @Transactional
     public RespMsg registerUser(Account registerUser) {
         QueryWrapper<Account> wrapper = new QueryWrapper<>();
         wrapper.eq("username", registerUser.getUsername());

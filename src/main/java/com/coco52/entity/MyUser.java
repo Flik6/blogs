@@ -28,6 +28,6 @@ public class MyUser {
     @TableField(fill = FieldFill.INSERT)
     private Boolean isLock;
     private Date lastLoginTime;
-
+    private String avatar;
 
 }

@@ -3,9 +3,9 @@ spring:
     name: blogs
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.1.29:30306/test?useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://114.96.117.111:3306/test
     username: root
-    password: ydxny123
+    password: 123456
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
@@ -24,7 +24,7 @@ spring:
       name: admin
       password: admin
 server:
-  port: 8080
+  port: 8081
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

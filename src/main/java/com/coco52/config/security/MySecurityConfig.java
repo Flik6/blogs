@@ -44,7 +44,6 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-
         List<Permissions> permissions = permissionsMapper.selectList(null);
         ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry urlRegistry = http.authorizeRequests();
         permissions.forEach(p -> {
@@ -54,8 +53,11 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
         http.formLogin().defaultSuccessUrl("/main.html?success")
                 .permitAll().and().logout().logoutSuccessUrl("/login").and()
                 .authorizeRequests().antMatchers("/login", "/register.html", "/register", "/index.html?error").permitAll()
+                .antMatchers("/getCarousel").permitAll()
                 .antMatchers("/**").authenticated()
-                .and().csrf().disable();
+                .and().csrf().disable()
+                //开启跨域
+                .cors();
 
     }
     @Bean
@@ -66,7 +68,7 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 //        super.configure(auth);
-        auth.userDetailsService(UserDetailsServiceImpl);
+//        auth.userDetailsService(UserDetailsServiceImpl);
         auth.authenticationProvider(myAuthenticationProvider);
     }
 }
