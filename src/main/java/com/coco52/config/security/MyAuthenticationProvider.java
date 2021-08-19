@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 
@@ -31,7 +32,7 @@ public class MyAuthenticationProvider implements AuthenticationProvider {
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
         UserDetails userDetails = userDetailService.loadUserByUsername(username);
-        if (userDetails == null) {
+        if (StringUtils.isEmpty(userDetails)) {
             throw new UsernameNotFoundException("请检查用户名是否输入错误！");
         } else if (!passwordEncoder.matches(password, userDetails.getPassword())) {
             throw new BadCredentialsException("密码输入错误");

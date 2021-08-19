@@ -50,9 +50,9 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
             urlRegistry.antMatchers(p.getUrl()).hasAnyAuthority(p.getPermTag());
         });
 
-        http.formLogin().defaultSuccessUrl("/main.html?success")
+        http.formLogin().loginPage("/login").failureUrl("/login?error=true").defaultSuccessUrl("/main?success")
                 .permitAll().and().logout().logoutSuccessUrl("/login").and()
-                .authorizeRequests().antMatchers("/login", "/register.html", "/register", "/index.html?error").permitAll()
+                .authorizeRequests().antMatchers("/user/**", "/index","/login","/register").permitAll()
                 .antMatchers("/getCarousel").permitAll()
                 .antMatchers("/**").authenticated()
                 .and().csrf().disable()
@@ -69,6 +69,7 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 //        super.configure(auth);
 //        auth.userDetailsService(UserDetailsServiceImpl);
-        auth.authenticationProvider(myAuthenticationProvider);
+//        auth.authenticationProvider(myAuthenticationProvider);
+        auth.userDetailsService(UserDetailsServiceImpl);
     }
 }
