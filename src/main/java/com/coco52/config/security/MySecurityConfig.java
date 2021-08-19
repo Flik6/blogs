@@ -14,7 +14,6 @@ import org.springframework.security.config.annotation.web.configurers.Expression
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import sun.security.util.Password;
 
 import java.util.List;
 
@@ -52,7 +51,7 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.formLogin().loginPage("/login").failureUrl("/login?error=true").defaultSuccessUrl("/main?success")
                 .permitAll().and().logout().logoutSuccessUrl("/login").and()
-                .authorizeRequests().antMatchers("/user/**", "/index","/login","/register").permitAll()
+                .authorizeRequests().antMatchers("/user/**","/school/**","/health", "/index","/login","/register").permitAll()
                 .antMatchers("/getCarousel").permitAll()
                 .antMatchers("/**").authenticated()
                 .and().csrf().disable()

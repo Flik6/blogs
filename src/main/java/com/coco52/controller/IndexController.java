@@ -24,4 +24,8 @@ public class IndexController {
     public String index(){
         return "index";
     }
+    @GetMapping("/health")
+    public String health(){
+        return "/campusToday/health";
+    }
 }
