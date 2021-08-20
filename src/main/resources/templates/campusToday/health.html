@@ -157,7 +157,8 @@
                             method: 'post',
                             url: '/school/submitHealth',
                             data: this.parameter,
-                            responseType: "json"
+                            responseType: "json",
+                            headers: { 'content-type': 'application/json;charset=UTF-8' },
                         }).then(function (response) {
                             if (response.data.code == 500) {
                                 that.$notify.error({
