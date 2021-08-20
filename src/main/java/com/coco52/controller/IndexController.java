@@ -27,6 +27,10 @@ public class IndexController {
 
     @GetMapping("/health")
     public String health() {
-        return "/campusToday/health";
+        return "campusToday/health";
+    }
+    @GetMapping("/schoolHelp")
+    public String help(){
+        return "campusToday/help";
     }
 }

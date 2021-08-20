@@ -27,7 +27,7 @@ public class CampusTodayServiceImpl implements CampusTodayService {
         UpdateWrapper<SchoolUser> userUpdateWrapper= new UpdateWrapper<>();
         userUpdateWrapper.eq("username",user.getUsername());
         userUpdateWrapper.eq("email",user.getEmail());
-        schoolUserMapper.update(user,userUpdateWrapper);
-        return RespMsg.success("此账号已存在数据库中，密码、邮箱校验成功，已成功修改~");
+        int update = schoolUserMapper.update(user, userUpdateWrapper);
+        return update==1?RespMsg.success("此账号已存在数据库中，密码、邮箱校验成功，已成功修改~"):RespMsg.fail("修改失败，用户名、邮箱与数据库中不同！~");
     }
 }

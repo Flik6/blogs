@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <!-- import CSS -->
@@ -45,32 +45,48 @@
 </style>
 <body>
 <div id="app">
+
     <div class="centerBox">
-        <!--        <el-steps :active="active" finish-status="success">
-                    <el-step title="步骤 1"></el-step>
-                    <el-step title="步骤 2"></el-step>
-                    <el-step title="步骤 3"></el-step>
-                </el-steps>-->
         <div class="step1" type="flex" v-loading="loading">
-            <h1 style="text-align: center;padding-bottom: 30px">今日校园健康提交</h1>
-            <el-form :label-position="labelPosition"  :rules="rules" label-width="90px" :model="parameter">
-                <el-form-item label="用户名" required>
-                    <el-input v-model="parameter.username" clearable></el-input>
-                </el-form-item>
-                <el-form-item label="密&emsp;码" required>
-                    <el-input v-model="parameter.password" show-password></el-input>
-                </el-form-item>
-                <el-form-item label="邮&emsp;箱" required>
-                    <el-input v-model="parameter.email" prop="emailRules"></el-input>
-                </el-form-item>
-                <el-form-item label="所在地" required>
-                    <el-input v-model="parameter.address"></el-input>
-                </el-form-item>
-            </el-form>
-            <el-button type="primary" @click="submitData" round>提&emsp;交</el-button>
+            <el-skeleton :loading="init"  :rows="8" animated>
+                <h1 style="text-align: center;padding-bottom: 30px">今日校园健康提交</h1>
+                <el-form label-position="left" ref="parameter" :model="parameter" :rules="rules" label-width="90px">
+                    <el-form-item label="用户名" prop="username">
+                        <el-input v-model="parameter.username" clearable></el-input>
+                    </el-form-item>
+                    <el-form-item label="密&emsp;码" prop="password">
+                        <el-input v-model="parameter.password" show-password></el-input>
+                    </el-form-item>
+                    <el-form-item label="邮&emsp;箱" prop="email">
+                        <el-input v-model="parameter.email"></el-input>
+                    </el-form-item>
+                    <el-form-item label="所在地" prop="address">
+                        <el-input v-model="parameter.address"></el-input>
+                    </el-form-item>
+                    </br>
+                    <el-link th:href="@{/schoolHelp}" href="/schoolHelp" style="float: left" type="primary">使用帮助</el-link>
+
+                    <el-popover ref="popover" placement="right" title width="200" trigger="hover">
+<!--                        <div style="width:200px;height:200px;">-->
+                            <!--                        <img-->
+                            <!--                                style="width:100%;height:100%;object-fit: fill;"-->
+                            <!--                                src="https://i1.mifile.cn/a4/xmad_15535933141925_ulkYv.jpg"-->
+                            <!--                                alt-->
+                            <!--                        />-->
+                            <el-image
+                                    style="width: 100%; height: 100%"
+                                    src="https://files.catbox.moe/4c2y2a.jpg"
+                                    fit="fill"></el-image>
+<!--                        </div>-->
+                    </el-popover>
+                    <el-link style="float: right" v-popover:popover type="primary">联系作者</el-link>
+
+                </el-form>
+                <el-button type="primary" @click="submitData('parameter')" round>提&emsp;交</el-button>
+            </el-skeleton>
         </div>
-        <!--        <el-button style="margin-top: 12px;" @click="next">下一步</el-button>-->
     </div>
+
 </div>
 </body>
 <!-- import Vue before Element -->
@@ -83,8 +99,7 @@
     new Vue({
         el: '#app',
         data() {
-
-            var checkEmail = (rule, value, callback) => {
+            let checkEmail = (rule, value, callback) => {
                 const mailReg = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/
                 if (!value) {
                     return callback(new Error('邮箱不能为空'))
@@ -96,56 +111,99 @@
                         callback(new Error('请输入正确的邮箱格式'))
                     }
                 }, 100)
-            }
+            };
             return {
-                labelPosition: "left",
+                init: true,
                 parameter: {
                     username: '',
                     password: '',
                     email: '',
                     address: ''
                 },
-                loading:false,
-                rules:{
-                    emailRules:[
-                        { validator: checkEmail, trigger: 'blur' }
-                    ]
+                loading: false,
+                rules: {
+                    email: [{
+                        required: true, // required就是这个框必须填写
+                        validator: checkEmail,
+                        trigger: 'blur'
+                    }],
+                    address: [
+                        {required: true, min: 5, message: '长度必须大于5个字符', trigger: 'change'}
+                    ],
+                    password: [
+                        {required: true, min: 3, message: '长度必须大于3个字符', trigger: 'change'}
+                    ],
+                    username: [{
+                        required: true, min: 3, message: '长度必须大于3个字符', trigger: 'change'
+                    }]
                 }
             }
         },
         methods: {
-            submitData() {
-                this.loading=true
-                if (this.parameter.username == '' || this.parameter.password == '' || this.parameter.email == '' || this.parameter.address == '') {
-                    this.$notify.error({
-                        title: '错误',
-                        message: '请填写完整的信息,以便可以正常的提交签到请求'
-                    });
-                    this.loading=false
-                    return
-                }
+            submitData(parameter) {
+                that = this
+                this.loading = true
 
+                this.$refs[parameter].validate((valid) => {
+                    if (!valid) {
+                        this.$notify.error({
+                            title: '错误',
+                            message: '请填写完整的信息,以便可以正常的提交签到请求'
+                        });
+                        this.loading = false
+                        return
+                    } else {
+                        axios({
+                            method: 'post',
+                            url: '/school/submitHealth',
+                            data: this.parameter,
+                            responseType: "json"
+                        }).then(function (response) {
+                            if (response.data.code == 500) {
+                                that.$notify.error({
+                                    title: '错误',
+                                    message: response.data.msg.toString()
+                                });
+                            } else if (response.data.code = 200) {
+                                that.$notify.info({
+                                    title: '成功',
+                                    message: response.data.msg.toString(),
+                                    type: 'success'
+                                });
+                            } else {
+                                that.$notify.error({
+                                    title: '错误',
+                                    message: "未知错误，请联系管理员"
+                                });
+                            }
 
-                let that=this
-                axios({
-                    method: 'post',
-                    url: '/school/submitHealth',
-                    data: this.parameter
-                }).then(function (response) {
-                    that.$notify.info({
-                        title: '成功',
-                        message: response.data.msg,
-                        type: 'success'
-                    });
-                }).catch(function (error) {
-                    that.$notify.info({
-                        title: "错误",
-                        message: error
-                    });
-                });
-                setTimeout(function(){ that.loading=false; }, 300);
+                        }).catch(function (error) {
+                            that.$notify.info({
+                                title: "错误",
+                                message: error
+                            });
+                        });
+                        setTimeout(function () {
+                            that.loading = false;
+                        }, 300);
+                    }
+                })
+
 
             }
+        },
+        mounted() {
+            let that = this
+            this.$nextTick(() => {
+                console.log(that.init)
+                // that.init = false
+
+                setTimeout(function () {
+                    that.init = false
+                    // console.log(that.init)
+
+                },Math.round(Math.random()*500+100))
+            })
         }
     })
 </script>
