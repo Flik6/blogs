@@ -3,13 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <!-- import CSS -->
+    <title>今日校园健康信息自动提交</title>
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon"/>
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 </head>
 <style>
     html, body, #app {
-        background: #7F7FD5; /* fallback for old browsers */
-        background: -webkit-linear-gradient(to bottom, #91EAE4, #86A8E7, #7F7FD5); /* Chrome 10-25, Safari 5.1-6 */
-        background: linear-gradient(to bottom, #91EAE4, #86A8E7, #7F7FD5); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+        /*background: #7F7FD5; !* fallback for old browsers *!*/
+        /*background: -webkit-linear-gradient(to bottom, #91EAE4, #86A8E7, #7F7FD5); !* Chrome 10-25, Safari 5.1-6 *!*/
+        /*background: linear-gradient(to bottom, #91EAE4, #86A8E7, #7F7FD5); !* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ *!*/
+        background-color: #0093E9;
+        background-image: linear-gradient(160deg, #0093E9 0%, #80D0C7 100%);
+
         width: 100%;
         height: 100%;
         margin: 0;
@@ -20,17 +25,12 @@
         border-radius: 25px;
         padding: 40px;
         background-color: white;
-        width: 30%;
+        width: 40%;
         height: auto;
         margin: 0 auto; /*水平居中*/
         position: relative;
         top: 50%; /*偏移*/
         transform: translateY(-50%);
-
-    }
-
-    .step1, .el-form {
-        height: 100%;
     }
 
     .el-form {
@@ -39,54 +39,72 @@
     }
 
     .el-button {
+        background-color: #0093E9;
+        background-image: linear-gradient(160deg, #0093E9 0%, #80D0C7 100%);
         width: 100%;
         margin-top: 20px;
     }
 </style>
 <body>
 <div id="app">
+    <el-collapse-transition>
+        <div  id="centerBox" v-show="init">
+            <!--        <el-collapse-transition>-->
+            <!--            <div v-show="!init">-->
 
-    <div class="centerBox">
-        <div class="step1" type="flex" v-loading="loading">
-            <el-skeleton :loading="init"  :rows="8" animated>
-                <h1 style="text-align: center;padding-bottom: 30px">今日校园健康提交</h1>
-                <el-form label-position="left" ref="parameter" :model="parameter" :rules="rules" label-width="90px">
-                    <el-form-item label="用户名" prop="username">
-                        <el-input v-model="parameter.username" clearable></el-input>
-                    </el-form-item>
-                    <el-form-item label="密&emsp;码" prop="password">
-                        <el-input v-model="parameter.password" show-password></el-input>
-                    </el-form-item>
-                    <el-form-item label="邮&emsp;箱" prop="email">
-                        <el-input v-model="parameter.email"></el-input>
-                    </el-form-item>
-                    <el-form-item label="所在地" prop="address">
-                        <el-input v-model="parameter.address"></el-input>
-                    </el-form-item>
-                    </br>
-                    <el-link th:href="@{/schoolHelp}" href="/schoolHelp" style="float: left" type="primary">使用帮助</el-link>
+            <el-collapse-transition>
+                <div v-show="successNotice">
+                    <div class="transition-box">
+                        <el-result :icon="resultNotice.iconStr" :title="resultNotice.titleStr">
 
-                    <el-popover ref="popover" placement="right" title width="200" trigger="hover">
-<!--                        <div style="width:200px;height:200px;">-->
-                            <!--                        <img-->
-                            <!--                                style="width:100%;height:100%;object-fit: fill;"-->
-                            <!--                                src="https://i1.mifile.cn/a4/xmad_15535933141925_ulkYv.jpg"-->
-                            <!--                                alt-->
-                            <!--                        />-->
+                            <template slot="extra">
+                                <div style="margin: 5px;color: #7d7d7d;font-size: 5px" v-text="resultNotice.subTitle"></div>
+                                <el-button type="primary" @click="successNotice=!successNotice;loading=!loading;" size="medium">返回
+                                </el-button>
+                            </template>
+                        </el-result>
+                    </div>
+                </div>
+            </el-collapse-transition>
+
+
+            <el-collapse-transition>
+                <div v-show="!successNotice" v-loading="loading">
+
+                    <h1 style="text-align: center;padding-bottom: 30px"></h1>
+                    <el-form label-position="left" ref="parameter" :model="parameter" :rules="rules"
+                             label-width="90px">
+                        <el-form-item label="用户名" prop="username">
+                            <el-input v-model="parameter.username" clearable></el-input>
+                        </el-form-item>
+                        <el-form-item label="密&emsp;码" prop="password">
+                            <el-input v-model="parameter.password" show-password></el-input>
+                        </el-form-item>
+                        <el-form-item label="邮&emsp;箱" prop="email">
+                            <el-input v-model="parameter.email"></el-input>
+                        </el-form-item>
+                        <el-form-item label="所在地" prop="address">
+                            <el-input v-model="parameter.address"></el-input>
+                        </el-form-item>
+                        </br>
+                        <el-link th:href="@{/schoolHelp}" href="/schoolHelp" style="float: left" type="primary">
+
+                        </el-link>
+
+                        <el-popover ref="popover" placement="right" title width="200" trigger="hover">
                             <el-image
                                     style="width: 100%; height: 100%"
                                     src="https://files.catbox.moe/4c2y2a.jpg"
                                     fit="fill"></el-image>
-<!--                        </div>-->
-                    </el-popover>
-                    <el-link style="float: right" v-popover:popover type="primary">联系作者</el-link>
+                        </el-popover>
+                        <el-link style="float: right" v-popover:popover type="primary"></el-link>
 
-                </el-form>
-                <el-button type="primary" @click="submitData('parameter')" round>提&emsp;交</el-button>
-            </el-skeleton>
+                    </el-form>
+                    <el-button type="primary" @click="submitData('parameter')" round></el-button>
+                </div>
+            </el-collapse-transition>
         </div>
-    </div>
-
+    </el-collapse-transition>
 </div>
 </body>
 <!-- import Vue before Element -->
@@ -113,14 +131,21 @@
                 }, 100)
             };
             return {
-                init: true,
+                successNotice: false,
+                loading:false,
+                init: false,
+                resultNotice:{
+                    iconStr:"error",
+                    titleStr:"提交失败",
+                    subTitle:"请根据提示进行操作",
+
+                },
                 parameter: {
                     username: '',
                     password: '',
                     email: '',
                     address: ''
                 },
-                loading: false,
                 rules: {
                     email: [{
                         required: true, // required就是这个框必须填写
@@ -140,9 +165,12 @@
             }
         },
         methods: {
+            initText(element){
+                element.innerText="使用帮助";
+                console.log(element.innerText)
+            },
             submitData(parameter) {
                 that = this
-                this.loading = true
 
                 this.$refs[parameter].validate((valid) => {
                     if (!valid) {
@@ -150,22 +178,27 @@
                             title: '错误',
                             message: '请填写完整的信息,以便可以正常的提交签到请求'
                         });
-                        this.loading = false
+                        this.resultNotice.iconStr="error";
+                        this.resultNotice.titleStr="错误";
+                        this.resultNotice.subTitle="请填写完整的信息,以便可以正常的提交签到请求";
                         return
                     } else {
+                        this.loading=true
                         axios({
                             method: 'post',
                             url: '/school/submitHealth',
                             data: this.parameter,
                             responseType: "json",
-                            headers: { 'content-type': 'application/json;charset=UTF-8' },
+                            headers: {'content-type': 'application/json;charset=UTF-8'},
                         }).then(function (response) {
                             if (response.data.code == 500) {
                                 that.$notify.error({
                                     title: '错误',
                                     message: response.data.msg.toString()
                                 });
+
                             } else if (response.data.code = 200) {
+
                                 that.$notify.info({
                                     title: '成功',
                                     message: response.data.msg.toString(),
@@ -177,20 +210,24 @@
                                     message: "未知错误，请联系管理员"
                                 });
                             }
-
+                            this.loading=false
+                            that.successNotice = !that.successNotice;
+                            response.data.code==500?that.resultNotice.iconStr="error":that.resultNotice.iconStr="success";
+                            response.data.code==500?that.resultNotice.titleStr="提交失败":that.resultNotice.titleStr="提交成功";
+                            that.resultNotice.subTitle=response.data.msg;
+                            console.log(that.resultNotice)
                         }).catch(function (error) {
+                            that.successNotice = true;
                             that.$notify.info({
                                 title: "错误",
                                 message: error
                             });
+                            that.resultNotice.iconStr="error";
+                            that.resultNotice.titleStr="错误";
+                            that.resultNotice.subTitle=error;
                         });
-                        setTimeout(function () {
-                            that.loading = false;
-                        }, 300);
                     }
                 })
-
-
             }
         },
         mounted() {
@@ -198,13 +235,16 @@
             this.$nextTick(() => {
                 console.log(that.init)
                 // that.init = false
-
                 setTimeout(function () {
-                    that.init = false
-                    // console.log(that.init)
+                    that.init = true
+                }, Math.round(Math.random() * 500 + 100))
+                document.getElementsByClassName("el-button")[1].innerText="提 交"
+                document.getElementsByClassName("el-link")[0].text="使用帮助"
+                document.getElementsByClassName("el-link")[1].text="联系作者"
+                document.getElementsByTagName("h1")[0].innerText="今日校园健康提交"
+                document.getElementById('centerBox').className="centerBox"
+            });
 
-                },Math.round(Math.random()*500+100))
-            })
         }
     })
 </script>

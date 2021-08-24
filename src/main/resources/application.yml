@@ -15,10 +15,10 @@ spring:
       content-type: text/html
     prefix: classpath:/templates/
     suffix: .html
-
   devtools:
     restart:
       enabled: true
+
 #  security:
 #    user:
 #      name: admin

@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 @Service
 public class CampusTodayServiceImpl implements CampusTodayService {
 
@@ -21,6 +24,8 @@ public class CampusTodayServiceImpl implements CampusTodayService {
         queryWrapper.eq("username",user.getUsername());
         SchoolUser schoolUser = schoolUserMapper.selectOne(queryWrapper);
         if (StringUtils.isEmpty(schoolUser)){
+            user.setCreateTime(new Timestamp(new Date().getTime()));
+            System.out.println(user);
             int insert = schoolUserMapper.insert(user);
             return insert==1?RespMsg.success("任务创建成功！"):RespMsg.fail("任务创建失败！请检查信息是否填写错误");
         }
