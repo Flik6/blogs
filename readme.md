@@ -63,4 +63,14 @@
    - 2021-08-09
    
    >1. 优化卡片大小不一致
-   >2. 
+   - 2021-08-24
+   >1. 制作今日校园自动填表的功能
+   >2. [![hA7Waq.png](https://z3.ax1x.com/2021/08/24/hA7Waq.png)](https://imgtu.com/i/hA7Waq)
+   > 3. 使用cdn引入element ui框架
+   > 4. 由于此项目比较小仅供个人使用，所以暂不考虑使用前后端分离
+   > 5. 提交成功UI
+   > [![hAHPLd.png](https://z3.ax1x.com/2021/08/24/hAHPLd.png)](https://imgtu.com/i/hAHPLd) 
+   > 6. 密码重置时
+   > 7. [![hAHVFP.png](https://z3.ax1x.com/2021/08/24/hAHVFP.png)](https://imgtu.com/i/hAHVFP)
+   > 8. 错误时：
+   > 9. [![hAHGF0.png](https://z3.ax1x.com/2021/08/24/hAHGF0.png)](https://imgtu.com/i/hAHGF0)
