@@ -11,7 +11,6 @@ public class MyUser {
     @TableId(type = IdType.AUTO)
     private Long Id;
     private String nickname;
-    private String email;
     @TableField(value = "registerTime",fill = FieldFill.INSERT)
     private Date registerTime;
     @TableField(value = "update_time",fill = FieldFill.INSERT_UPDATE)

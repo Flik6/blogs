@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,6 +21,8 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+//开启spring security 权限控制注解
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 /**
  * Spring security配置类
  * configure(HttpSecurity http)
@@ -43,16 +46,11 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
-        List<Permissions> permissions = permissionsMapper.selectList(null);
-        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry urlRegistry = http.authorizeRequests();
-        permissions.forEach(p -> {
-            urlRegistry.antMatchers(p.getUrl()).hasAnyAuthority(p.getPermTag());
-        });
+        http.rememberMe();
 
         http.formLogin().loginPage("/login").failureUrl("/login?error=true").defaultSuccessUrl("/main?success")
                 .permitAll().and().logout().logoutSuccessUrl("/login").and()
-                .authorizeRequests().antMatchers("/user/**","/school/**","/schoolHelp","/health", "/index","/").permitAll()
+                .authorizeRequests().antMatchers("/register","/school/**","/schoolHelp","/health", "/index","/").permitAll()
                 .antMatchers("/getCarousel").permitAll()
                 .antMatchers("/**").authenticated()
                 .and().csrf().disable()

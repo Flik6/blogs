@@ -47,8 +47,6 @@ public class HomeController {
      */
     @GetMapping("init")
     public RespMsg init(){
-
-
         return RespMsg.success("获取成功");
     }
     @GetMapping("getCards")

@@ -3,9 +3,9 @@ spring:
     name: blogs
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://114.96.117.111:3306/test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mysql://121.37.14.30:3306/blog?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
     username: root
-    password: 123456
+    password: flik0424
   # thymeleaf模板格式
   thymeleaf:
     cache: false

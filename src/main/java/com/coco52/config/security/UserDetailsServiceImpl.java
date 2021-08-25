@@ -2,10 +2,7 @@ package com.coco52.config.security;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.coco52.entity.*;
-import com.coco52.mapper.AccountMapper;
-import com.coco52.mapper.PermissionsMapper;
-import com.coco52.mapper.RoleMapper;
-import com.coco52.mapper.UserMapper;
+import com.coco52.mapper.*;
 import com.coco52.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
@@ -36,8 +33,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private AccountMapper accountMapper;
     @Autowired
-    private PermissionsMapper permissionsMapper;
+    private RoleMapper roleMapper;
 
+    @Autowired
+    private RoleAccountMapper roleAccountMapper;
     @Override
     public UserDetails loadUserByUsername(String name) throws AuthenticationException {
         QueryWrapper<Account> accountWrapper = new QueryWrapper();
@@ -46,11 +45,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (StringUtils.isEmpty(account)) {
             throw new UsernameNotFoundException("用户名不存在!");
         }
-        List<Permissions> permissions = permissionsMapper.selectPermissionByAccount(account);
+//        List<Permissions> permissions = permissionsMapper.selectPermissionByAccount(account);
         List<GrantedAuthority> authorities = new ArrayList<>();
+        List<RoleAccount> roleList = roleAccountMapper.selectList(new QueryWrapper<RoleAccount>().eq("userUuid", account.getUuid()));
 
-        for (int i = 0; i < permissions.size(); i++) {
-            authorities.add(new SimpleGrantedAuthority(permissions.get(i).getPermTag()));
+        for (int i = 0; i < roleList.size(); i++) {
+            Role role = roleMapper.selectOne(new QueryWrapper<Role>().eq("id", roleList.get(i).getRoleId().toString()));
+            authorities.add(new SimpleGrantedAuthority(role.getRoleName()));
         }
         MyUser myUser = userMapper.selectUsersByUsername(name);
         User user = new User(account.getUsername(),

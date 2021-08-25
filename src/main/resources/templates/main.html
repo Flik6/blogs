@@ -2,7 +2,8 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<!--      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">-->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -17,12 +18,17 @@
 <div sec:authorize="isAuthenticated()">
     <p>已登录</p>
     <p>登录名：<span sec:authentication="name"></span></p>
+    <p><span sec:authorize="isFullyAuthenticated()"></span></p>
     <p>角色：<span sec:authentication="principal.authorities"></span></p>
     <p>Username：<span sec:authentication="principal.username"></span></p>
     <p>Password：<span sec:authentication="principal.password"></span></p>
     <p>拥有的角色：
-        <span sec:authorize="hasRole('ROLE_ADMIN')">管理员</span>
-        <span sec:authorize="hasRole('ROLE_USER')">用户</span>
+        <span sec:authorize="hasRole('ROLE_admin')">管理员1</span>
+        <span sec:authorize="hasRole('ROLE_user')">用户1</span>
+        <span sec:authorize="hasRole('ROLE_secretary')">secretary1</span>
+        <span sec:authorize="hasAuthority('admin')">管理员2</span>
+        <span sec:authorize="hasAuthority('user')">用户2</span>
+        <span sec:authorize="hasAuthority('secretary')">secretary2</span>
     </p>
 </div>
 </body>

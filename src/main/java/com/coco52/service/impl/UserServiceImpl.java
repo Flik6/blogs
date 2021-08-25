@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.UUID;
 
@@ -36,11 +37,12 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     public RespMsg registerUser(Account registerUser) {
+        System.out.println(registerUser.getPassword());
         QueryWrapper<Account> wrapper = new QueryWrapper<>();
         wrapper.eq("username", registerUser.getUsername());
         Account account = accountMapper.selectOne(wrapper);
         if (account != null) {
-            return RespMsg.fail("账号已被注册！");
+            return RespMsg.fail("账号已被注册,请更改您的用户名！");
         }
         registerUser.setUuid(UUID.randomUUID().toString().replace("-", "").toLowerCase());
         registerUser.setPassword(new BCryptPasswordEncoder().encode(registerUser.getPassword()));
@@ -50,9 +52,9 @@ public class UserServiceImpl implements UserService {
         myUser.setState(0);
         myUser.setValidateCode(UUID.randomUUID().toString().replace("-", "").toLowerCase());
         userMapper.insert(myUser);
-        roleAccountMapper.insert(new RoleAccount(registerUser.getUuid(),5));
+        roleAccountMapper.insert(new RoleAccount(null,registerUser.getUuid(),3));
         if(flag==1){
-            return RespMsg.success("注册成功！");
+            return RespMsg.success("注册成功！3秒后将跳转到登录页！");
         }else {
             return RespMsg.success("未知错误，请联系管理员！");
         }

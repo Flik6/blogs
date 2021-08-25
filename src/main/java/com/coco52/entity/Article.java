@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 @TableName("articles")
 public class Article {
-    @TableId(value = "id",type = IdType.NONE)
+    @TableId(value = "id",type = IdType.AUTO)
     private Long id;
     private String uuid;
     private String title;
