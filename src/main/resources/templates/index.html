@@ -1,117 +1,339 @@
 <!DOCTYPE html>
+
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
-    <title>Flik-让生活,更生活！</title>
-    <link rel="icon" th:href="@{/favicon.ico}" href="../static/favicon.ico" type="image/x-icon"/>
+    <!-- import CSS -->
+    <title>Flik-让生活,更生活</title>
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon"/>
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
-</head>
-<style>
-    html, body, #app {
-        background-image: url("https://cn-south-227-storage-hitokoto-19627663.oss.dogecdn.com/pic/qf3cu.jpg");
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0
-    }
 
-    #search, #time,#advice {
-        margin: 0px auto 20px auto; /*水平居中*/
-        width: 40%;
-        text-align: center;
-    }
-    .el-input{
-        -webkit-filter: blur(1px);
-        -moz-filter: blur(1px);
-        -ms-filter: blur(1px);
-        filter: blur(1px);
-    }
-    .center {
-        /*background-color: darkslategrey;*/
-        position: relative;
-        top: 30%; /*偏移*/
-        transform: translateY(-30%);
-    }
-    .adviceImage{
-        margin: 2%;
-        width: 50px;
-        height: 50px;
-    }
-</style>
+</head>
+
 <body>
 <div id="app">
-    <div class="center">
-        <div id="time">
-            {{date}}
-        </div>
-        <div id="search">
-            <div style="margin-top: 15px;">
-                <el-autocomplete
-                        class="inline-input"
-                        v-model="input"
-                        :fetch-suggestions="querySearch"
-                        placeholder="请输入内容"
-                        :trigger-on-focus="false"
-                        @select="handleSelect"
-                ></el-autocomplete>
-            </div>
-        </div>
-        <div id="advice">
-            <div>
-                <span><img class="adviceImage" src="../static/svg/Google.svg"></span>
-                <span><img class="adviceImage" src="../static/svg/Google.svg"></span>
-                <span><img class="adviceImage" src="../static/svg/Google.svg"></span>
-                <span><img class="adviceImage" src="../static/svg/Google.svg"></span>
-<!--                <span class="adviceImage"></span>-->
-<!--                <span class="adviceImage"></span>-->
-<!--                <span class="adviceImage"></span>-->
-<!--                <span class="adviceImage"></span>-->
+    <div id="header">
+        <el-row type="flex">
+            <el-col :xl="1" :lg="1" :md="1" :sm="1" :xs="0">
+                <div class="grid-content"></div>
+            </el-col>
+            <el-col :xl="3" :lg="2" :md="2" :sm="2" :xs="0"><a href="/"><img width="100%" height="100%"
+                                                                             class="grid-content logo"
+                                                                             src="../assets/logo.png"/></a></el-col>
+            <el-col :xl="4" :lg="5" :md="3" :sm="4" :xs="0">
+                <div class="grid-content bg-purple"></div>
+            </el-col>
+            <el-col :xl="8" :lg="13" :md="14" :sm="13" :xs="18">
+                <el-row type="flex">
+                    <div>
+                        <!--            <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">-->
+                        <!--            <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal">-->
+                        <el-menu :default-active="'/'" router class="el-menu-demo" mode="horizontal">
+                            <el-col :md="6" :sm="6" :xs="7">
+                                <el-menu-item index="/">首 页<i class="el-icon-s-home"></i></el-menu-item>
+                            </el-col>
+                            <el-col :md="6" :sm="6" :xs="8">
+                                <el-menu-item index="/message">消息中心<i class="el-icon-message-solid"></i></el-menu-item>
+                            </el-col>
+                            <el-col :md="6" :sm="6" :xs="9">
+                                <el-submenu index="3">
+                                    <template slot="title">我的工作台<i class="el-icon-s-cooperation"></i></template>
+                                    <el-menu-item index="/worker1">选项1</el-menu-item>
+                                    <el-menu-item index="/worker2">选项2</el-menu-item>
+                                    <el-menu-item index="/worker3">选项3</el-menu-item>
+                                </el-submenu>
+                            </el-col>
+                            <el-col :md="6" :sm="6" :xs="0">
+                                <el-menu-item index="4"><a style="text-decoration: none" href="https://www.ele.me"
+                                                           target="_blank">订单管理 <i class="el-icon-s-order"></i></a>
+                                </el-menu-item>
+                            </el-col>
+                            <el-col :md="0" :sm="0" :xs="0">
+                                <el-menu-item index="5">
+                                    留言板<i class="el-icon-s-order"></i>
+                                </el-menu-item>
+                            </el-col>
+                        </el-menu>
+                    </div>
+                </el-row>
+            </el-col>
+            <el-col :xl="5" :lg="1" :md="1" :sm="1" :xs="0">
+                <div class="grid-content bg-purple"></div>
+            </el-col>
+            <el-col :xl="3" :lg="3" :md="3" :sm="3" :xs="6">
+                <el-avatar style="float: right" :size="40"
+                           src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"></el-avatar>
+            </el-col>
+        </el-row>
 
-            </div>
-        </div>
-        <div id="Hitokoto">
+    </div>
+    <div class="home">
+        <!--    <img alt="Vue logo" src="../assets/logo.png">-->
+        <!-- 走马灯 开始 -->
 
+        <div class="carousel">
+            <!-- 下面的 :height="bannerHeight + 'px'" 是绑定数据 -->
+            <el-carousel :interval="5000" arrow="always" :height="img_height  + 'px'">
+                <el-carousel-item v-for="(item,index) in dataList" :key="item">
+                    <img style="width: 100%" :src="item" @load="img_load" ref='img_ref'/>
+                </el-carousel-item>
+            </el-carousel>
         </div>
-        <div id="about">
+        <!-- 走马灯 结束 -->
+        <el-divider></el-divider>
+        <br/>
+        <br/>
+        <el-row style="width: 100%;" v-for="(item,rowIndex) in cardList" :key="rowIndex" type="flex">
 
-        </div>
+            <el-col :xs="12" v-for="(o, index) in item" :key="index" :offset="(index+1) %4==1 ? 0 : 1">
+                <!--        <a :href="o.article">-->
+                <el-link type="primary" style="width: 100%" :underline="false" :href="o.article">
+                    <el-card :body-style="{ padding: '0px',width:'100%' }" shadow="always">
+
+                        <img :src="o.imageUrl+'?'+Math.random()"
+                             class="image">
+                        <div style="padding: 14px;">
+                            <span>好吃的汉堡</span>
+                            <div class="bottom" v-if="introFlag">
+                                <time class="time">{{ o.intro }}</time>
+                                <!--                <el-button type="text" class="button">操作按钮</el-button>-->
+                            </div>
+                        </div>
+
+                    </el-card>
+                </el-link>
+                <!--      </a>-->
+            </el-col>
+        </el-row>
+        <br/>
+        <br/>
+
+    </div>
+    <div id="footer">
+        <el-divider></el-divider>
+        <el-row type="flex">
+            <el-col :xs="12" :md="6" :lg="6" :xl="6">
+        <span>
+          <img width="100%" height="auto" src="../assets/logo.png">
+          <br/>
+          <br/>
+          <br/>
+          <span class="span1">本站为非盈利性个人网站，本站所有软件来自互联网，版权属原著所有，如有需要请购买正版。如有侵权，敬请来信联系我们，我们立即删除。</span>
+        </span>
+                <!--        <br/>-->
+            </el-col>
+            <el-col :xs="0" :md="6" :lg="6" :xl="6">
+        <span>
+          <h3>Blog,记录美好时光</h3>
+
+          <ul>
+            <a class="bottomUrl" href="/"><li>关于网站</li></a>
+            <a class="bottomUrl" href="/"><li>下载帮助</li></a>
+            <a class="bottomUrl" href="/"><li>版权说明</li></a>
+            <a class="bottomUrl" href="/"><li>会员说明</li></a>
+            <a class="bottomUrl" href="/"><li>分享规则</li></a>
+          </ul>
+        </span>
+            </el-col>
+            <el-col :xs="0" :md="6" :lg="6" :xl="6">
+        <span>
+          <h3>隐私协议 & 问题反馈</h3>
+          <ul>
+            <li>隐私协议</li>
+            <li>联系我们</li>
+            <li>反馈问题</li>
+          </ul>
+
+        </span>
+
+            </el-col>
+            <el-col :xs="12" :md="6" :lg="6" :xl="6">
+        <span>
+          <h3>联 系 客 服</h3>
+          <br/>
+          <img width="30%" style="padding-right: 5%;" src="https://z3.ax1x.com/2021/07/22/W0ziH1.png">
+          <img width="30%" style="padding-left: 5%" src="https://z3.ax1x.com/2021/07/22/W0ziH1.png">
+        </span>
+            </el-col>
+        </el-row>
     </div>
 </div>
+
 </body>
 <!-- import Vue before Element -->
 <script src="https://unpkg.com/vue/dist/vue.js"></script>
 <!-- import JavaScript -->
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.js" type="text/javascript"></script>
 <script>
     new Vue({
         el: '#app',
-        data: function () {
-            return {
-                visible: false,
-                date: "...",
-                input: ""
-            }
+        data: {
+            currentDate: new Date(),
+            introFlag: false,
+            dataList: ["https://unsplash.it/1600/900?random?" + new Date().getTime() + "1",
+                "https://unsplash.it/1600/900?random?" + new Date().getTime() + "2",
+                "https://unsplash.it/1600/900?random?" + new Date().getTime() + "3",
+
+            ],
+            img_height: '',
+            cardList: [
+                {"imageUrl": "https://unsplash.it/1600/900?random", "intro": "这是一段简介1", "article": "/about"},
+                {
+                    "imageUrl": "https://unsplash.it/1600/900?random",
+                    "intro": "这是一段简介2",
+                    "article": "/about"
+                },
+                {"imageUrl": "https://unsplash.it/1600/900?random", "intro": "这是一段简介3", "article": "/about"},
+                {
+                    "imageUrl": "https://unsplash.it/1600/900?random",
+                    "intro": "这是一段简介4",
+                    "article": "/about"
+                },
+                {"imageUrl": "https://unsplash.it/1600/900?random", "intro": "这是一段简介3", "article": "/about"},
+                {
+                    "imageUrl": "https://unsplash.it/1600/900?random",
+                    "intro": "这是一段简介4",
+                    "article": "/about"
+                },
+            ]
+        },
+        mounted() {
+            let that = this
+            //  监听窗口大小改变事件  设置banner走马灯的height
+            this.setRowLength()
+            window.onresize = () => {
+                return (() => {
+                    that.img_load();
+                })();
+            };
         },
         methods: {
-            setDate() {
-                let time = new Date();
-                this.date = time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
-                // console.log(this.date)
-            }
-        },
-        mounted: function () {
-            var _this = this;//声明一个变量指向Vue实例this，保证作用域一致
-            _this.setDate();
-            this.timer = setInterval(function () {
-                _this.setDate();
-            }, 1000);
-        },
-        beforeDestory: function () {
-            if (this.timer) {
-                clearInterval(this.timer);//在vue示例销毁前，清除我们的定时器
-            }
-        }
+            setRowLength() {
+                //分割服务器返回的cardList列表 并设置每行显示数量
+                let clientWidth = document.body.clientWidth
+                if (clientWidth < 768) {
+                    this.splitCardList(this.cardList, 2);
+                    this.introFlag = false;
+                } else if (clientWidth >= 768 && clientWidth < 992) {
+                    this.splitCardList(this.cardList, 2);
+                    this.introFlag = false;
+                } else if (clientWidth >= 992 && clientWidth < 1200) {
+                    this.splitCardList(this.cardList, 3);
+                    this.introFlag = true;
+                } else {
+                    this.splitCardList(this.cardList, 4);
+                    this.introFlag = true;
 
+                }
+            },
+            img_load() {
+                this.img_height = this.$refs.img_ref[0].height;
+            },
+            getBannerUrl() {
+                this.$axios({
+                    method: "get",
+                    url: "http://192.168.105.192:8081/home/getCarousel",
+                    data: "",
+                }).then((resp) => {
+                    this.dataList = resp.data.data
+                    console.log(this.dataList)
+                }).catch((error) => {
+                    console.log(error)
+                })
+            },
+            getCards() {
+
+            },
+            splitCardList(cardList, lineLength) {
+                var result = [];
+                for (var i = 0; i < cardList.length; i += lineLength) {
+                    result.push(cardList.slice(i, i + lineLength));
+                }
+                this.cardList = result;
+            }
+        }, created() {
+            this.getBannerUrl();
+        }
     })
+
 </script>
+<style>
+
+    .bottom {
+        margin-top: 3% !important;
+    }
+
+    .el-card__body > div {
+        padding: 3% !important;
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    /deep/ .el-link--inner {
+        width: 100%;
+        height: 100%;
+    }
+
+    .time {
+        font-size: 13px;
+        color: #999;
+    }
+
+    .el-card {
+        width: 100%;
+        height: 100%;
+    }
+
+    /deep/ .el-card__body {
+        height: 100%;
+        width: 100%;
+    }
+
+    .el-col {
+        width: 100%;
+    }
+
+    .el-row {
+        padding-bottom: 40px;
+        height: 100%
+    }
+
+    .logo {
+        width: 100%;
+        height: 100%;
+    }
+
+    .button {
+        padding: 0;
+        float: right;
+    }
+
+    .image {
+        width: 100%;
+        height: 70%;
+        display: block;
+    }
+
+
+    .el-carousel__item h3 {
+        color: #475669;
+        font-size: 14px;
+        opacity: 0.75;
+        line-height: 200px;
+        margin: 0;
+    }
+
+    .el-carousel__item:nth-child(2n) {
+        background-color: #99a9bf;
+    }
+
+    .el-carousel__item:nth-child(2n+1) {
+        background-color: #d3dce6;
+    }
+</style>
 </html>
