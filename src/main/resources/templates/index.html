@@ -8,6 +8,7 @@
     <title>Flik-让生活,更生活</title>
     <link rel="icon" href="/images/favicon.ico" type="image/x-icon"/>
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+
 </head>
 
 <body>
@@ -169,12 +170,12 @@
 <script>
     new Vue({
         el: '#app',
-        data:{
+        data: {
             currentDate: new Date(),
-            introFlag:false,
-            dataList: ["https://unsplash.it/1600/900?random?"+new Date().getTime()+"1",
-                "https://unsplash.it/1600/900?random?"+new Date().getTime()+"2",
-                "https://unsplash.it/1600/900?random?"+new Date().getTime()+"3",
+            introFlag: false,
+            dataList: ["https://unsplash.it/1600/900?random?" + new Date().getTime() + "1",
+                "https://unsplash.it/1600/900?random?" + new Date().getTime() + "2",
+                "https://unsplash.it/1600/900?random?" + new Date().getTime() + "3",
 
             ],
             img_height: '',
@@ -210,26 +211,26 @@
             };
         },
         methods: {
-            setRowLength(){
+            setRowLength() {
                 //分割服务器返回的cardList列表 并设置每行显示数量
-                let clientWidth=document.body.clientWidth
-                if (clientWidth<768){
+                let clientWidth = document.body.clientWidth
+                if (clientWidth < 768) {
                     this.splitCardList(this.cardList, 2);
-                    this.introFlag=false;
-                }else if (clientWidth>=768 && clientWidth<992){
+                    this.introFlag = false;
+                } else if (clientWidth >= 768 && clientWidth < 992) {
                     this.splitCardList(this.cardList, 2);
-                    this.introFlag=false;
-                }else if (clientWidth>=992 && clientWidth<1200){
+                    this.introFlag = false;
+                } else if (clientWidth >= 992 && clientWidth < 1200) {
                     this.splitCardList(this.cardList, 3);
-                    this.introFlag=true;
-                }else {
+                    this.introFlag = true;
+                } else {
                     this.splitCardList(this.cardList, 4);
-                    this.introFlag=true;
+                    this.introFlag = true;
 
                 }
             },
             img_load() {
-                this.img_height =this.$refs.img_ref[0].height;
+                this.img_height = this.$refs.img_ref[0].height;
             },
             getBannerUrl() {
                 this.$axios({
@@ -261,16 +262,19 @@
 </script>
 <style>
 
-    .bottom{
+    .bottom {
         margin-top: 3% !important;
     }
-    .el-card__body>div{
-        padding: 3%!important;
+
+    .el-card__body > div {
+        padding: 3% !important;
     }
+
     a {
         text-decoration: none;
     }
-    /deep/.el-link--inner{
+
+    /deep/ .el-link--inner {
         width: 100%;
         height: 100%;
     }
@@ -279,14 +283,17 @@
         font-size: 13px;
         color: #999;
     }
-    .el-card{
+
+    .el-card {
         width: 100%;
         height: 100%;
     }
-    /deep/.el-card__body{
+
+    /deep/ .el-card__body {
         height: 100%;
         width: 100%;
     }
+
     .el-col {
         width: 100%;
     }
@@ -311,7 +318,6 @@
         height: 70%;
         display: block;
     }
-
 
 
     .el-carousel__item h3 {
