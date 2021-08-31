@@ -1,7 +1,11 @@
 package com.coco52.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.coco52.entity.RespMsg;
+import com.coco52.service.UtilService;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,27 +16,18 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 @RestController
 @RequestMapping("/util")
 public class UtilController {
     @Autowired
-    private RestTemplate restTemplate;
+    private UtilService utilService;
 
     @RequestMapping("/sign")
-    @Valid
-    public RespMsg sign( String e) {
-        if (StringUtils.isEmpty(e)){
-            return RespMsg.fail("e的参数不允许为null");
-        }
-        ResponseEntity<String> forEntity = restTemplate.getForEntity("http://ehr.yadi-group.com:82/YDHR/m.aspx?e=" + e + "&s=AttLbsSign.SQL", String.class);
-        int statusCode = forEntity.getStatusCodeValue();
-        HttpHeaders headers = forEntity.getHeaders();
-        MediaType contentType = headers.getContentType();
-        System.out.println(contentType);
-        if ("text/html".contains(contentType.toString())){
-            return RespMsg.fail("参数e可能已经过期！");
-        }
-        return RespMsg.success(forEntity.getBody());
+    public RespMsg sign(String url) {
+        RespMsg sign = utilService.sign(url);
+        return sign;
     }
 }
