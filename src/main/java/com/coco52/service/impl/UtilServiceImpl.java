@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -26,22 +27,21 @@ public class UtilServiceImpl implements UtilService {
     private MyUtils myUtils;
 
     @Override
-    public RespMsg sign(String url) {
+    public RespMsg sign(String url,String userId) {
         if (StringUtils.isEmpty(url)) {
             return RespMsg.fail("url的参数不允许为null");
         }
-        System.out.println(url);
         Map<String, String> urlParam = myUtils.getUrlParam(url);
         String e=urlParam.get("e");
         JSONObject json = new JSONObject();
-        json.put("empids", "3393");
+        json.put("empids", userId);
         json.put("loctime", "2021-09-30 18:00:48");
         json.put("coordinate", "113.94837060116612,22.558772759333863");
         json.put("Location", "广东省深圳市南山区新西路");
         json.put("photoid", "");
         json.put("description", "");
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
         headers.set("User-Agent","Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.87 Safari/537.36");
         HttpEntity<String> entity = new HttpEntity<String>("jparam="+json.toJSONString(), headers);
         URI uri = null;
@@ -53,9 +53,10 @@ public class UtilServiceImpl implements UtilService {
 
         ResponseEntity<String> forEntity = restTemplate.postForEntity(uri, entity, String.class);
         int statusCode = forEntity.getStatusCodeValue();
-        if (statusCode != 200 || forEntity.getHeaders().getContentType().toString().contains("text/html")) {
-            return RespMsg.fail("Error，签到失败,参数E可能已过期！", forEntity.getBody());
+
+        if (statusCode != 200 || forEntity.getHeaders().containsKey("Location") || forEntity.getBody().contains("errcode")) {
+            return RespMsg.fail("Error，签到失败,参数可能填写错误！", forEntity.getBody());
         }
-        return RespMsg.success(forEntity.getBody());
+        return RespMsg.success("打卡成功！",forEntity.getBody());
     }
 }

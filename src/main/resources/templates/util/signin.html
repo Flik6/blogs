@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+  <meta charset="UTF-8">
+  <!-- import CSS -->
+  <title>签到-Flik.enjoy-life</title>
+  <link rel="icon" href="/favicon.ico" type="image/x-icon"/>
+  <link href="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.3/theme-chalk/index.min.css" rel="stylesheet">
+
+</head>
+<style>
+  html, body, #app {
+    /*background: #7F7FD5; !* fallback for old browsers *!*/
+    /*background: -webkit-linear-gradient(to bottom, #91EAE4, #86A8E7, #7F7FD5); !* Chrome 10-25, Safari 5.1-6 *!*/
+    /*background: linear-gradient(to bottom, #91EAE4, #86A8E7, #7F7FD5); !* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ *!*/
+    background-color: #0093E9;
+    background-image: linear-gradient(160deg, #0093E9 0%, #80D0C7 100%);
+
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0
+  }
+
+  .centerBox {
+    border-radius: 25px;
+    padding: 40px;
+    background-color: white;
+    width: 40%;
+    height: auto;
+    margin: 0 auto; /*水平居中*/
+    position: relative;
+    top: 50%; /*偏移*/
+    transform: translateY(-50%);
+  }
+
+  .el-form {
+    margin-right: 5%;
+    margin-left: 5%;
+  }
+  .el-result__extra{
+    margin: 0 auto;
+    text-align: center;
+  }
+  .el-result__title{
+    margin: 0 auto;
+    text-align: center;
+  }
+  .el-result__icon{
+    margin: 0 auto;
+    width: 30%;
+    height: 30%;
+  }
+  .el-button {
+    background-color: #0093E9;
+    background-image: linear-gradient(160deg, #0093E9 0%, #80D0C7 100%);
+    width: 100%;
+    margin-top: 20px;
+  }
+</style>
+<body>
+<div id="app">
+  <el-collapse-transition>
+    <div  id="centerBox" v-show="init">
+      <!--        <el-collapse-transition>-->
+      <!--            <div v-show="!init">-->
+
+      <el-collapse-transition>
+        <div v-show="successNotice">
+          <div class="transition-box">
+            <el-result :icon="resultNotice.iconStr" :title="resultNotice.titleStr">
+
+              <template slot="extra">
+                <div style="margin: 5px;color: #7d7d7d;font-size: 5px" v-text="resultNotice.subTitle"></div>
+                <el-button type="primary" @click="successNotice=!successNotice;loading=!loading;" size="medium">返回
+                </el-button>
+              </template>
+            </el-result>
+          </div>
+        </div>
+      </el-collapse-transition>
+
+
+      <el-collapse-transition>
+        <div v-show="!successNotice" v-loading="loading">
+
+          <h1 style="text-align: center;padding-bottom: 30px"></h1>
+          <el-form label-position="left" ref="parameter" :model="parameter" :rules="rules"
+                   label-width="90px">
+            <el-form-item label="页面Url" prop="url">
+              <el-input v-model="parameter.url" clearable></el-input>
+            </el-form-item>
+            <el-form-item label="员工ID" prop="userId">
+              <el-input v-model="parameter.userId" show-password></el-input>
+            </el-form-item>
+            </br>
+            <el-link th:href="@{/schoolHelp}" href="/schoolHelp" style="float: left" type="primary">
+
+            </el-link>
+
+            <el-popover ref="popover" placement="right" title width="200" trigger="hover">
+              <el-image
+                      style="width: 100%; height: 100%"
+                      src="https://files.catbox.moe/4c2y2a.jpg"
+                      fit="fill"></el-image>
+            </el-popover>
+            <el-link style="float: right" v-popover:popover type="primary"></el-link>
+
+          </el-form>
+          <el-button type="primary" @click="submitData('parameter')" round></el-button>
+        </div>
+      </el-collapse-transition>
+    </div>
+  </el-collapse-transition>
+</div>
+</body>
+<!-- import Vue before Element -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+<!-- import JavaScript -->
+
+<script src="https://cdn.staticfile.org/element-ui/2.15.6/index.js"></script>
+
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.js" type="text/javascript"></script>
+<script>
+  new Vue({
+    el: '#app',
+    data() {
+      let checkEmail = (rule, value, callback) => {
+        const mailReg = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/
+        if (!value) {
+          return callback(new Error('邮箱不能为空'))
+        }
+        setTimeout(() => {
+          if (mailReg.test(value)) {
+            callback()
+          } else {
+            callback(new Error('请输入正确的邮箱格式'))
+          }
+        }, 100)
+      };
+      return {
+        successNotice: false,
+        loading:false,
+        init: false,
+        resultNotice:{
+          iconStr:"error",
+          titleStr:"提交失败",
+          subTitle:"请根据提示进行操作",
+
+        },
+        parameter: {
+          url: '',
+          userId: '',
+        },
+        rules: {
+          userId: [
+            {required: true, min: 3, message: '长度必须大于3个字符', trigger: 'change'}
+          ],
+          url: [{
+            required: true, min: 3, message: '长度必须大于3个字符', trigger: 'change'
+          }]
+        }
+      }
+    },
+    methods: {
+      initText(element){
+        element.innerText="使用帮助";
+        console.log(element.innerText)
+      },
+      submitData(parameter) {
+        that = this
+
+        this.$refs[parameter].validate((valid) => {
+          if (!valid) {
+            this.$notify.error({
+              title: '错误',
+              message: '请填写完整的信息'
+            });
+            this.resultNotice.iconStr="error";
+            this.resultNotice.titleStr="错误";
+            this.resultNotice.subTitle="请填写完整的信息";
+            return
+          } else {
+            this.loading=true
+            axios({
+              method: 'post',
+              url: '/util/sign',
+              data: this.parameter,
+              responseType: "json",
+              headers: {'content-type': 'application/json;charset=UTF-8'},
+            }).then(function (response) {
+              if (response.data.code == 500) {
+                that.$notify.error({
+                  title: '错误',
+                  message: response.data.msg.toString()
+                });
+
+              } else if (response.data.code = 200) {
+                that.$notify.info({
+                  title: '成功',
+                  message: response.data.msg.toString(),
+                  type: 'success'
+                });
+              } else {
+                that.$notify.error({
+                  title: '错误',
+                  message: "未知错误，请联系管理员"
+                });
+              }
+              this.loading=false
+              that.successNotice = !that.successNotice;
+              response.data.code==500?that.resultNotice.iconStr="error":that.resultNotice.iconStr="success";
+              response.data.code==500?that.resultNotice.titleStr=response.data.msg:that.resultNotice.titleStr="提交成功";
+              that.resultNotice.subTitle=response.data.data;
+              console.log(that.resultNotice)
+            }).catch(function (error) {
+              error.code=404
+              if (error.code=404){
+                that.successNotice = true;
+                that.$notify.info({
+                  title: "错误",
+                  message: "404,网页请求不到了~"
+                });
+                that.resultNotice.iconStr="error";
+                that.resultNotice.titleStr="错误";
+                that.resultNotice.subTitle="404,网页请求不到了~";
+              }else{
+              that.successNotice = true;
+                that.$notify.info({
+                  title: "错误",
+                  message: error
+                });
+              that.resultNotice.iconStr="error";
+              that.resultNotice.titleStr="错误";
+              that.resultNotice.subTitle="404,网页请求不到了~";
+              }
+            });
+          }
+        })
+      }
+    },
+    mounted() {
+      let that = this
+      this.$nextTick(() => {
+        console.log(that.init)
+        // that.init = false
+        setTimeout(function () {
+          that.init = true
+        }, Math.round(Math.random() * 500 + 100))
+        document.getElementsByClassName("el-button")[1].innerText="提 交"
+        // document.getElementsByClassName("el-link")[0].text="使用帮助"
+        document.getElementsByClassName("el-link")[1].text="联系作者"
+        document.getElementsByTagName("h1")[0].innerText="签到"
+        document.getElementById('centerBox').className="centerBox"
+      });
+
+    }
+  })
+</script>
+</html>
