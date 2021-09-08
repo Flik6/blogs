@@ -33,8 +33,8 @@ public class UtilController {
 
     @RequestMapping("/sign")
     @ResponseBody
-    public RespMsg sign(@RequestBody SignIn signIn) {
-        RespMsg sign = utilService.sign(signIn.getUrl(), signIn.getUserId());
+    public RespMsg sign(@RequestBody SignIn signIn,HttpServletRequest request) {
+        RespMsg sign = utilService.sign(signIn.getUrl(), signIn.getUserId(),request);
         return sign;
 //        return RespMsg.success("111");
     }
