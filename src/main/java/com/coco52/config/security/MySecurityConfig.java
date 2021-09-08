@@ -50,7 +50,7 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.formLogin().loginPage("/login").failureUrl("/login?error=true").defaultSuccessUrl("/main?success")
                 .permitAll().and().logout().logoutSuccessUrl("/login").and()
-                .authorizeRequests().antMatchers("/register","/sign","/util/**","/school/**","/schoolHelp","/health", "/index","/").permitAll()
+                .authorizeRequests().antMatchers("/register","/user/register","/sign","/util/**","/school/**","/schoolHelp","/health", "/index","/").permitAll()
                 .antMatchers("/getCarousel").permitAll()
                 .antMatchers("/**").authenticated()
                 .and().csrf().disable()

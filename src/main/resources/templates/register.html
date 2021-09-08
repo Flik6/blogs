@@ -5,7 +5,7 @@
     <!-- import CSS -->
     <title>今日校园健康信息自动提交</title>
     <link rel="icon" href="/images/favicon.ico" type="image/x-icon"/>
-    <link href="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.3/theme-chalk/index.min.css" rel="stylesheet">
+    <link href="https://cdn.staticfile.org/element-ui/2.15.6/theme-chalk/index.min.css" rel="stylesheet">
 
 </head>
 <style>
@@ -106,9 +106,9 @@
 </div>
 </body>
 <!-- import Vue before Element -->
-<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+<script src="https://cdn.staticfile.org/vue/2.6.9/vue.min.js"></script>
 <!-- import JavaScript -->
-<script src="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.3/index.min.js"></script>
+<script src="https://cdn.staticfile.org/element-ui/2.15.6/index.js"></script>
 
 <script src="https://cdn.bootcss.com/axios/0.18.0/axios.js" type="text/javascript"></script>
 <script>
@@ -206,6 +206,7 @@
                             }
                             this.loading=false
                             that.successNotice = !that.successNotice;
+                            console.log(response.data.code)
                             response.data.code==500?that.resultNotice.iconStr="error":that.resultNotice.iconStr="success";
                             response.data.code==500?that.resultNotice.titleStr="提交失败":that.resultNotice.titleStr="提交成功";
                             that.resultNotice.subTitle=response.data.msg;

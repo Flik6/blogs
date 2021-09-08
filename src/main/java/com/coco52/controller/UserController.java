@@ -1,6 +1,7 @@
 package com.coco52.controller;
 
 import com.coco52.entity.Account;
+import com.coco52.entity.MyUser;
 import com.coco52.entity.RespMsg;
 import com.coco52.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class UserController {
 
 
     @RequestMapping("/showUsers")
-    @PreAuthorize("hasAnyRole('ROLE_admin','ROLE_secretary','ROLE_user')")
+    @PreAuthorize("hasAnyRole('ROLE_admin','ROLE_secretary')")
     public RespMsg showUser() {
         return RespMsg.success("showUsers");
     }
@@ -58,7 +59,7 @@ public class UserController {
 
     @RequestMapping("/banUser")
     @PreAuthorize("hasAnyRole('ROLE_admin','ROLE_secretary')")
-    public RespMsg banUser() {
+    public RespMsg banUser(MyUser myUser) {
         return RespMsg.success("banUser");
     }
 

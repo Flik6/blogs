@@ -1,6 +1,7 @@
 package com.coco52.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.coco52.entity.*;
 import com.coco52.entity.RespMsg;
 import com.coco52.mapper.AccountMapper;
@@ -12,8 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -35,7 +38,7 @@ public class UserServiceImpl implements UserService {
      * @param registerUser 用户上传进来的账号密码
      * @return 1注册成功  0注册失败  2账号已被注册
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public RespMsg registerUser(Account registerUser) {
         System.out.println(registerUser.getPassword());
         QueryWrapper<Account> wrapper = new QueryWrapper<>();
@@ -54,7 +57,7 @@ public class UserServiceImpl implements UserService {
         userMapper.insert(myUser);
         roleAccountMapper.insert(new RoleAccount(null,registerUser.getUuid(),3));
         if(flag==1){
-            return RespMsg.success("注册成功！3秒后将跳转到登录页！");
+            return RespMsg.success("注册成功！");
         }else {
             return RespMsg.success("未知错误，请联系管理员！");
         }
@@ -122,9 +125,60 @@ public class UserServiceImpl implements UserService {
         QueryWrapper<Account> accountWrapper = new QueryWrapper();
         accountWrapper.eq("username",username);
         Account account = accountMapper.selectOne(accountWrapper);
-
-
         return account;
     }
 
+    @Override
+    public RespMsg banUser(MyUser myUser) {
+        if (ObjectUtils.isEmpty(myUser) ||myUser.getUuid().isEmpty()){
+            return RespMsg.fail("UUID为空,请检查之后重试！");
+        }
+        UpdateWrapper<MyUser> myUserUpdateWrapper = new UpdateWrapper<>();
+        myUserUpdateWrapper.eq("uuid",myUser.getUuid());
+        myUserUpdateWrapper.set("isLock",true);
+        int update = userMapper.update(null, myUserUpdateWrapper);
+        return update==1? RespMsg.success("成功封禁用户！",myUser.getUuid()): RespMsg.fail("封禁失败,用户可能！",myUser.getUuid());
+    }
+
+    /**
+     * 删除用户
+     * @param myUser 用户实体  此参数内uuid不能为空
+     * @return
+     */
+    @Override
+    public RespMsg delUser(MyUser myUser) {
+        if (ObjectUtils.isEmpty(myUser) ||myUser.getUuid().isEmpty()){
+            return RespMsg.fail("UUID为空,请检查之后重试！");
+        }
+        UpdateWrapper<MyUser> myUserUpdateWrapper = new UpdateWrapper<>();
+        myUserUpdateWrapper.eq("uuid",myUser.getUuid());
+        myUserUpdateWrapper.set("isAvailable",true);
+        int update = userMapper.update(null, myUserUpdateWrapper);
+        return update==1? RespMsg.success("成功删除用户！",myUser.getUuid()): RespMsg.fail("删除用户失败,用户可能不存在！",myUser.getUuid());
+    }
+
+    /**
+     * 调用注册方法，直接注册用户
+     * @param account
+     * @return
+     */
+    @Override
+    public RespMsg addUser(Account account) {
+        RespMsg respMsg = this.registerUser(account);
+        return respMsg;
+    }
+
+    @Override
+    public RespMsg updateUser(MyUser myUser) {
+        UpdateWrapper<MyUser> myUserUpdateWrapper = new UpdateWrapper<>();
+        myUserUpdateWrapper.eq("uuid",myUser.getUuid());
+        int update = userMapper.update(myUser, myUserUpdateWrapper);
+        return update==1? RespMsg.success("成功更新用户！",myUser.getUuid()): RespMsg.fail("更新用户失败,用户可能不存在！",myUser.getUuid());
+    }
+
+    @Override
+    public RespMsg showUser() {
+        List<MyUser> myUsers = userMapper.selectList(null);
+        return RespMsg.success("查询成功！",myUsers);
+    }
 }
