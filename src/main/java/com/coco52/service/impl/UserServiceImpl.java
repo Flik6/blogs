@@ -30,6 +30,7 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private RoleAccountMapper roleAccountMapper;
+
     /**
      * 注册账号  操作两个数据库表  user表 account表
      * user表存储用户详细信息
@@ -55,18 +56,19 @@ public class UserServiceImpl implements UserService {
         myUser.setState(0);
         myUser.setValidateCode(UUID.randomUUID().toString().replace("-", "").toLowerCase());
         userMapper.insert(myUser);
-        roleAccountMapper.insert(new RoleAccount(null,registerUser.getUuid(),3));
-        if(flag==1){
+        roleAccountMapper.insert(new RoleAccount(null, registerUser.getUuid(), 3));
+        if (flag == 1) {
             return RespMsg.success("注册成功！");
-        }else {
+        } else {
             return RespMsg.success("未知错误，请联系管理员！");
         }
     }
 
     /**
      * 登录方法
-     * @param loginAccount   用户登录的账号密码
-     * @return   LoginMsgVO实体类   三个code值   0   1  2
+     *
+     * @param loginAccount 用户登录的账号密码
+     * @return LoginMsgVO实体类   三个code值   0   1  2
      * 0  用户尚未注册
      * 1  用户登录成功
      * 2  用户密码错误
@@ -100,14 +102,12 @@ public class UserServiceImpl implements UserService {
     }
 
 
-
-
     @Override
     public MyUser selectByAccount(Account loginAccount) {
         QueryWrapper<Account> accountWrapper = new QueryWrapper();
-        if (loginAccount.getUsername()!=null || loginAccount.getUsername()!=""){
+        if (loginAccount.getUsername() != null || loginAccount.getUsername() != "") {
             accountWrapper.eq("username", loginAccount.getUsername());
-        }else if (loginAccount.getPassword()!=null || loginAccount.getPassword()!=""){
+        } else if (loginAccount.getPassword() != null || loginAccount.getPassword() != "") {
             accountWrapper.eq("password", loginAccount.getPassword());
         }
         Account account = accountMapper.selectOne(accountWrapper);
@@ -123,42 +123,44 @@ public class UserServiceImpl implements UserService {
     @Override
     public Account selectByUsername(String username) {
         QueryWrapper<Account> accountWrapper = new QueryWrapper();
-        accountWrapper.eq("username",username);
+        accountWrapper.eq("username", username);
         Account account = accountMapper.selectOne(accountWrapper);
         return account;
     }
 
     @Override
     public RespMsg banUser(MyUser myUser) {
-        if (ObjectUtils.isEmpty(myUser) ||myUser.getUuid().isEmpty()){
+        if (ObjectUtils.isEmpty(myUser.getUuid())) {
             return RespMsg.fail("UUID为空,请检查之后重试！");
         }
         UpdateWrapper<MyUser> myUserUpdateWrapper = new UpdateWrapper<>();
-        myUserUpdateWrapper.eq("uuid",myUser.getUuid());
-        myUserUpdateWrapper.set("isLock",true);
+        myUserUpdateWrapper.eq("uuid", myUser.getUuid());
+        myUserUpdateWrapper.set("isLock", true);
         int update = userMapper.update(null, myUserUpdateWrapper);
-        return update==1? RespMsg.success("成功封禁用户！",myUser.getUuid()): RespMsg.fail("封禁失败,用户可能！",myUser.getUuid());
+        return update == 1 ? RespMsg.success("成功封禁用户！", myUser.getUuid()) : RespMsg.fail("封禁失败,用户可能！", myUser.getUuid());
     }
 
     /**
      * 删除用户
+     *
      * @param myUser 用户实体  此参数内uuid不能为空
      * @return
      */
     @Override
     public RespMsg delUser(MyUser myUser) {
-        if (ObjectUtils.isEmpty(myUser) ||myUser.getUuid().isEmpty()){
+        if (ObjectUtils.isEmpty(myUser.getUuid())){
             return RespMsg.fail("UUID为空,请检查之后重试！");
         }
         UpdateWrapper<MyUser> myUserUpdateWrapper = new UpdateWrapper<>();
-        myUserUpdateWrapper.eq("uuid",myUser.getUuid());
-        myUserUpdateWrapper.set("isAvailable",true);
+        myUserUpdateWrapper.eq("uuid", myUser.getUuid());
+        myUserUpdateWrapper.set("isAvailable", true);
         int update = userMapper.update(null, myUserUpdateWrapper);
-        return update==1? RespMsg.success("成功删除用户！",myUser.getUuid()): RespMsg.fail("删除用户失败,用户可能不存在！",myUser.getUuid());
+        return update == 1 ? RespMsg.success("成功删除用户！", myUser.getUuid()) : RespMsg.fail("删除用户失败,用户可能不存在！", myUser.getUuid());
     }
 
     /**
      * 调用注册方法，直接注册用户
+     *
      * @param account
      * @return
      */
@@ -171,14 +173,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public RespMsg updateUser(MyUser myUser) {
         UpdateWrapper<MyUser> myUserUpdateWrapper = new UpdateWrapper<>();
-        myUserUpdateWrapper.eq("uuid",myUser.getUuid());
+        myUserUpdateWrapper.eq("uuid", myUser.getUuid());
         int update = userMapper.update(myUser, myUserUpdateWrapper);
-        return update==1? RespMsg.success("成功更新用户！",myUser.getUuid()): RespMsg.fail("更新用户失败,用户可能不存在！",myUser.getUuid());
+        return update == 1 ? RespMsg.success("成功更新用户！", myUser.getUuid()) : RespMsg.fail("更新用户失败,用户可能不存在！", myUser.getUuid());
     }
 
     @Override
     public RespMsg showUser() {
         List<MyUser> myUsers = userMapper.selectList(null);
-        return RespMsg.success("查询成功！",myUsers);
+        return RespMsg.success("查询成功！", myUsers);
     }
 }

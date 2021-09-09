@@ -47,7 +47,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
 //        List<Permissions> permissions = permissionsMapper.selectPermissionByAccount(account);
         List<GrantedAuthority> authorities = new ArrayList<>();
-        List<RoleAccount> roleList = roleAccountMapper.selectList(new QueryWrapper<RoleAccount>().eq("userUuid", account.getUuid()));
+        List<RoleAccount> roleList = roleAccountMapper.selectList(new QueryWrapper<RoleAccount>().eq("user_uuid", account.getUuid()));
 
         for (int i = 0; i < roleList.size(); i++) {
             Role role = roleMapper.selectOne(new QueryWrapper<Role>().eq("id", roleList.get(i).getRoleId().toString()));

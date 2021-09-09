@@ -34,33 +34,38 @@ public class UserController {
 
 
     @RequestMapping("/showUsers")
-    @PreAuthorize("hasAnyRole('ROLE_admin','ROLE_secretary')")
+    @PreAuthorize("hasAnyAuthority('admin','secretary')")
     public RespMsg showUser() {
-        return RespMsg.success("showUsers");
+        RespMsg respMsg = userService.showUser();
+        return respMsg;
     }
 
     @RequestMapping("/addUser")
-    @PreAuthorize("hasAnyRole('ROLE_admin','ROLE_secretary')")
-    public RespMsg addUser() {
-        return RespMsg.success("addUser");
+    @PreAuthorize("hasAnyAuthority('admin','secretary')")
+    public RespMsg addUser(Account account) {
+        RespMsg respMsg = userService.addUser(account);
+        return respMsg;
     }
 
     @RequestMapping("/updateUser")
-    @PreAuthorize("hasAnyRole('ROLE_admin','ROLE_secretary')")
-    public RespMsg updateUser() {
-        return RespMsg.success("updateUser");
+    @PreAuthorize("hasAnyAuthority('admin','secretary')")
+    public RespMsg updateUser(MyUser myUser) {
+        RespMsg respMsg = userService.updateUser(myUser);
+        return respMsg;
     }
 
     @RequestMapping("/delUser")
-    @PreAuthorize("hasAnyRole('ROLE_admin','ROLE_secretary')")
-    public RespMsg delUser() {
-        return RespMsg.success("delUser");
+    @PreAuthorize("hasAnyAuthority('admin','secretary')")
+    public RespMsg delUser(MyUser myUser) {
+        RespMsg respMsg = userService.delUser(myUser);
+        return respMsg;
     }
 
     @RequestMapping("/banUser")
-    @PreAuthorize("hasAnyRole('ROLE_admin','ROLE_secretary')")
+    @PreAuthorize("hasAnyAuthority('admin','secretary')")
     public RespMsg banUser(MyUser myUser) {
-        return RespMsg.success("banUser");
+        RespMsg respMsg = userService.banUser(myUser);
+        return respMsg;
     }
 
 

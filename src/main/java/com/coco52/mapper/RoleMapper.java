@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface RoleMapper extends BaseMapper<Role> {
 
-    @Select("select roleName,roleId id from role r, role_account ra where r.id=ra.roleId and ra.userUuid=#{uuid}")
+    @Select("select role_name,role_id id from role r, role_account ra where r.id=ra.roleId and ra.user_uuid=#{uuid}")
     List<Role> selectRolesByUserUuid(String uuid);
 }
