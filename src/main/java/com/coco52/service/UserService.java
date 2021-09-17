@@ -2,6 +2,7 @@ package com.coco52.service;
 
 import com.coco52.entity.*;
 import com.coco52.entity.RespMsg;
+import org.springframework.http.HttpRequest;
 
 public interface UserService {
     RespMsg registerUser(Account account);

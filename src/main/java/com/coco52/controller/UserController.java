@@ -5,6 +5,7 @@ import com.coco52.entity.MyUser;
 import com.coco52.entity.RespMsg;
 import com.coco52.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +31,10 @@ public class UserController {
         System.out.println(account);
         RespMsg msg = userService.registerUser(account);
         return msg;
+    }
+    @RequestMapping("/login")
+    public RespMsg login(@RequestBody Account account){
+        return userService.login(account);
     }
 
 

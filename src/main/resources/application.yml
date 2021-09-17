@@ -30,3 +30,13 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
+jwt:
+#  JWT存储的请求头
+  tokenHeader: Authorization
+#  加密密钥
+  secret: blogs-secret
+#  过期时间 60*60*24
+  expiration: 604800
+#  JWT负载中拿到开头
+  tokenHead: Bearer
+

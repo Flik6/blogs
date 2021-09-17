@@ -9,14 +9,24 @@ import com.coco52.mapper.RoleAccountMapper;
 import com.coco52.mapper.RoleMapper;
 import com.coco52.mapper.UserMapper;
 import com.coco52.service.UserService;
+import com.coco52.util.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpRequest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -26,10 +36,17 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private AccountMapper accountMapper;
     @Autowired
-    private RoleMapper roleMapper;
+    private UserDetailsService userDetailsService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private RoleAccountMapper roleAccountMapper;
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
+    @Value("${jwt.tokenHead}")
+    private String tokenHead;
 
     /**
      * 注册账号  操作两个数据库表  user表 account表
@@ -49,7 +66,7 @@ public class UserServiceImpl implements UserService {
             return RespMsg.fail("账号已被注册,请更改您的用户名！");
         }
         registerUser.setUuid(UUID.randomUUID().toString().replace("-", "").toLowerCase());
-        registerUser.setPassword(new BCryptPasswordEncoder().encode(registerUser.getPassword()));
+        registerUser.setPassword(passwordEncoder.encode(registerUser.getPassword()));
         int flag = accountMapper.insert(registerUser);
         MyUser myUser = new MyUser();
         myUser.setUuid(registerUser.getUuid());
@@ -75,30 +92,27 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public RespMsg login(Account loginAccount) {
-        RespMsg respMsg = new RespMsg();
-        QueryWrapper<Account> accountWrapper = new QueryWrapper<>();
-        Account account = accountMapper.selectOne(accountWrapper.eq("username", loginAccount.getUsername()));
-        if (account == null) {
-            respMsg.setCode(0);
-            respMsg.setMsg("用户尚未注册！请注册之后在尝试登录");
-            respMsg.setData(null);
-            return respMsg;
+        UserDetails userDetails = userDetailsService.loadUserByUsername(loginAccount.getUsername());
+        if (userDetails == null || !passwordEncoder.matches(loginAccount.getPassword(), userDetails.getPassword())) {
+            return RespMsg.fail("用户名或密码错误！");
+        } else if (!userDetails.isEnabled()) {
+            return RespMsg.fail("账户被禁用,请联系管理员！");
+        } else if (!userDetails.isAccountNonLocked()) {
+            return RespMsg.fail("账号已被锁定,请联系管理员！");
+        } else if (!userDetails.isCredentialsNonExpired()) {
+            return RespMsg.fail("密码凭证已失效,请联系管理员！");
+        } else if (!userDetails.isAccountNonExpired()) {
+            return RespMsg.fail("账号已过期,请联系管理员！");
         }
-        accountWrapper.eq("password", loginAccount.getPassword());
-        Account account1 = accountMapper.selectOne(accountWrapper);
-        if (account1 == null) {
-            respMsg.setCode(2);
-            respMsg.setMsg("用户密码错误,请重新登录！");
-            respMsg.setData(null);
-            return respMsg;
-        }
-        QueryWrapper<MyUser> userWrapper = new QueryWrapper<>();
-        userWrapper.eq("uuid", account.getUuid());
-        MyUser myUser = userMapper.selectOne(userWrapper);
-        respMsg.setCode(1);
-        respMsg.setMsg("登陆成功！");
-        respMsg.setData(myUser);
-        return respMsg;
+        //更新security登录用户对象
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        String token = jwtTokenUtil.generateToken(userDetails);
+        Map<String, String> tokenMap = new HashMap<>();
+        tokenMap.put("token", token);
+        tokenMap.put("tokenHead", tokenHead);
+        return RespMsg.success("登陆成功", tokenMap);
     }
 
 
@@ -148,7 +162,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public RespMsg delUser(MyUser myUser) {
-        if (ObjectUtils.isEmpty(myUser.getUuid())){
+        if (ObjectUtils.isEmpty(myUser.getUuid())) {
             return RespMsg.fail("UUID为空,请检查之后重试！");
         }
         UpdateWrapper<MyUser> myUserUpdateWrapper = new UpdateWrapper<>();

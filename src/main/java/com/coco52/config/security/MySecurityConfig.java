@@ -1,6 +1,9 @@
 package com.coco52.config.security;
 
 
+import com.coco52.config.CustomAccessDeniedHandler;
+import com.coco52.config.CustomAuthenticationEntryPoint;
+import com.coco52.config.JwtAuthenticationTokenFilter;
 import com.coco52.entity.Permissions;
 import com.coco52.mapper.PermissionsMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +16,13 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import javax.servlet.Filter;
 import java.util.List;
 
 @Configuration
@@ -42,22 +48,42 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsServiceImpl UserDetailsServiceImpl;
 
     @Autowired
-    private PermissionsMapper permissionsMapper;
+    private CustomAccessDeniedHandler customAccessDeniedHandler;
+
+    @Autowired
+    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.rememberMe();
-
-        http.formLogin().loginPage("/login").failureUrl("/login?error=true").defaultSuccessUrl("/main?success")
-                .permitAll().and().logout().logoutSuccessUrl("/login").and()
-                .authorizeRequests().antMatchers("/register","/user/register","/sign","/util/**","/school/**","/schoolHelp","/health", "/index","/").permitAll()
-                .antMatchers("/getCarousel").permitAll()
-                .antMatchers("/**").authenticated()
-                .and().csrf().disable()
-                //开启跨域
-                .cors();
+        http.csrf()
+                .disable()
+                //基于token 不需要session
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                .antMatchers("/user/login","/user/register","/sign","/util/**","/school/**","/schoolHelp","/health", "/index","/")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .headers()
+                .cacheControl();
+//      添加jwt登录授权过滤器
+        http.addFilterBefore(jwtAuthenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+//      添加自定义未授权、未登录、登录结果返回
+        http.exceptionHandling()
+                .accessDeniedHandler(customAccessDeniedHandler)
+                .authenticationEntryPoint(customAuthenticationEntryPoint);
 
     }
+    @Bean
+    public Filter jwtAuthenticationTokenFilter() {
+        return new JwtAuthenticationTokenFilter();
+    }
+
+
     @Bean
     protected PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
@@ -75,4 +101,5 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 //        auth.authenticationProvider(myAuthenticationProvider);
         auth.userDetailsService(UserDetailsServiceImpl);
     }
+
 }
