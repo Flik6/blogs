@@ -1,11 +1,9 @@
 package com.coco52.config.security;
 
 
-import com.coco52.config.CustomAccessDeniedHandler;
-import com.coco52.config.CustomAuthenticationEntryPoint;
-import com.coco52.config.JwtAuthenticationTokenFilter;
-import com.coco52.entity.Permissions;
-import com.coco52.mapper.PermissionsMapper;
+import com.coco52.handler.CustomAccessDeniedHandler;
+import com.coco52.handler.CustomAuthenticationEntryPoint;
+import com.coco52.filter.JwtAuthenticationTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,15 +13,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.Filter;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -63,8 +58,6 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/user/login","/user/register","/sign","/util/**","/school/**","/schoolHelp","/health", "/index","/")
-                .permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -78,6 +71,32 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(customAuthenticationEntryPoint);
 
     }
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring()
+                .antMatchers(
+                        "/register",
+                        "/login",
+
+                        "/sign",
+                        "/util/**",
+                        "/school/**",
+                        "/schoolHelp",
+                        "/health",
+                        "/index",
+                        "/",
+                        "/css/**",
+                        "/images/**",
+                        "/favicon.ico",
+                        "/doc.html",//   swagger2放行路径
+                        "/webjars/**",
+                        "/swagger-resources/**",
+                        "/v2/**",
+                        "/swagger-ui.html/**"
+                );
+    }
+
     @Bean
     public Filter jwtAuthenticationTokenFilter() {
         return new JwtAuthenticationTokenFilter();
@@ -85,14 +104,10 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     @Bean
-    protected PasswordEncoder passwordEncoder(){
+    protected PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/css/**","/images/**","/favicon.ico","/**/*.ico");
-    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {

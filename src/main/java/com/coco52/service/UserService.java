@@ -11,7 +11,6 @@ public interface UserService {
     Account selectByUsername(String username);
     RespMsg banUser(MyUser myUser);
     RespMsg delUser(MyUser myUser);
-    RespMsg addUser(Account account);
     RespMsg updateUser(MyUser myUser);
     RespMsg showUser();
 }

@@ -17,11 +17,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.HashMap;
@@ -92,13 +94,22 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public RespMsg login(Account loginAccount) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(loginAccount.getUsername());
+        if (loginAccount == null || StringUtils.isEmpty(loginAccount.getUsername()) || StringUtils.isEmpty(loginAccount.getPassword())) {
+            return RespMsg.fail("请提交完整信息哦~");
+        }
+        UserDetails userDetails = null;
+        try {
+            userDetails = userDetailsService.loadUserByUsername(loginAccount.getUsername());
+        } catch (UsernameNotFoundException e) {
+
+            return new RespMsg(400, e.getMessage(), null);
+        }
         if (userDetails == null || !passwordEncoder.matches(loginAccount.getPassword(), userDetails.getPassword())) {
             return RespMsg.fail("用户名或密码错误！");
         } else if (!userDetails.isEnabled()) {
-            return RespMsg.fail("账户被禁用,请联系管理员！");
+            return RespMsg.fail("账户不存在,请联系管理员！");
         } else if (!userDetails.isAccountNonLocked()) {
-            return RespMsg.fail("账号已被锁定,请联系管理员！");
+            return RespMsg.fail("账号已被封禁,请联系管理员！");
         } else if (!userDetails.isCredentialsNonExpired()) {
             return RespMsg.fail("密码凭证已失效,请联系管理员！");
         } else if (!userDetails.isAccountNonExpired()) {
@@ -149,8 +160,10 @@ public class UserServiceImpl implements UserService {
         }
         UpdateWrapper<MyUser> myUserUpdateWrapper = new UpdateWrapper<>();
         myUserUpdateWrapper.eq("uuid", myUser.getUuid());
-        myUserUpdateWrapper.set("isLock", true);
-        int update = userMapper.update(null, myUserUpdateWrapper);
+//        myUserUpdateWrapper.set("is_lock", 1);
+        MyUser myUser1 = new MyUser();
+        myUser1.setIsLock(true);
+        int update = userMapper.update(myUser1, myUserUpdateWrapper);
         return update == 1 ? RespMsg.success("成功封禁用户！", myUser.getUuid()) : RespMsg.fail("封禁失败,用户可能！", myUser.getUuid());
     }
 
@@ -167,22 +180,11 @@ public class UserServiceImpl implements UserService {
         }
         UpdateWrapper<MyUser> myUserUpdateWrapper = new UpdateWrapper<>();
         myUserUpdateWrapper.eq("uuid", myUser.getUuid());
-        myUserUpdateWrapper.set("isAvailable", true);
+        myUserUpdateWrapper.set("is_available", true);
         int update = userMapper.update(null, myUserUpdateWrapper);
         return update == 1 ? RespMsg.success("成功删除用户！", myUser.getUuid()) : RespMsg.fail("删除用户失败,用户可能不存在！", myUser.getUuid());
     }
 
-    /**
-     * 调用注册方法，直接注册用户
-     *
-     * @param account
-     * @return
-     */
-    @Override
-    public RespMsg addUser(Account account) {
-        RespMsg respMsg = this.registerUser(account);
-        return respMsg;
-    }
 
     @Override
     public RespMsg updateUser(MyUser myUser) {

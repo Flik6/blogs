@@ -1,9 +1,11 @@
 package com.coco52.controller;
 
+import io.swagger.annotations.Api;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
+@Api(tags = "索引类")
 public class IndexController {
     @GetMapping("/login")
     public String login() {

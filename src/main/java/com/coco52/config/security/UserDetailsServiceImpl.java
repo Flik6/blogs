@@ -43,7 +43,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         accountWrapper.eq("username", name);
         Account account = accountMapper.selectOne(accountWrapper);
         if (StringUtils.isEmpty(account)) {
-            throw new UsernameNotFoundException("用户名不存在!");
+            throw  new UsernameNotFoundException("用户名不存在!");
         }
 //        List<Permissions> permissions = permissionsMapper.selectPermissionByAccount(account);
         List<GrantedAuthority> authorities = new ArrayList<>();

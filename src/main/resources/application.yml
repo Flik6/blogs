@@ -36,7 +36,7 @@ jwt:
 #  加密密钥
   secret: blogs-secret
 #  过期时间 60*60*24
-  expiration: 604800
+  expiration: 86400
 #  JWT负载中拿到开头
   tokenHead: Bearer
 

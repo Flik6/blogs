@@ -1,5 +1,7 @@
-package com.coco52.config;
+package com.coco52.filter;
 
+import com.alibaba.fastjson.JSON;
+import com.coco52.entity.RespMsg;
 import com.coco52.util.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +19,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * jwt登录授权过滤器
@@ -41,6 +44,17 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         if (authHeader!=null && authHeader.startsWith(tokenHead)){
             String authToken = authHeader.substring(tokenHead.length());
             String username = jwtTokenUtil.getUsernameFromToken(authToken);
+            if (username==null){
+                response.setCharacterEncoding("utf-8");
+                response.setContentType("application/json");
+                PrintWriter writer = response.getWriter();
+                RespMsg fail = RespMsg.fail("token已过期,请重新登陆!");
+                fail.setCode(499);
+                writer.write(JSON.toJSONString(fail));
+                writer.flush();
+                writer.close();
+                return;
+            }
             // token 存在用户名  但用户未登录
             if (username!=null && null== SecurityContextHolder.getContext().getAuthentication()){
 //                登录

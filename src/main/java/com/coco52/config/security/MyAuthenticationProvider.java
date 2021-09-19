@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Component
@@ -45,10 +46,10 @@ public class MyAuthenticationProvider implements AuthenticationProvider {
         } else if (!userDetails.isCredentialsNonExpired()) {
             throw new LockedException("凭证已过期");
         }
-
         MyUser user = userMapper.selectUsersByUsername(username);
-        user.setUpdateTime(new Date());
-        user.setLastLoginTime(new Date());
+        Timestamp timestamp = new Timestamp(new Date().getTime());
+        user.setUpdateTime(timestamp);
+        user.setLastLoginTime(timestamp);
         userMapper.update(user, new QueryWrapper<MyUser>().eq("uuid", user.getUuid()));
         return new UsernamePasswordAuthenticationToken(username, password, userDetails.getAuthorities());
 

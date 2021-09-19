@@ -1,5 +1,8 @@
 package com.coco52.entity;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,9 +10,13 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@ApiModel("通用返回实体类")
 public class RespMsg {
+    @ApiModelProperty("状态码")
     private Integer code;
+    @ApiModelProperty("提示信息")
     private String msg;
+    @ApiModelProperty("数据")
     private Object data;
 
 

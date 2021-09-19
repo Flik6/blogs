@@ -1,4 +1,4 @@
-package com.coco52.config;
+package com.coco52.handler;
 
 import com.alibaba.fastjson.JSON;
 import com.coco52.entity.RespMsg;
