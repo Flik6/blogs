@@ -13,7 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-//@RequestMapping("/user")
+@RequestMapping("/user")
 @Api(tags = "用户相关模块")
 public class UserController {
 

@@ -76,9 +76,8 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         web.ignoring()
                 .antMatchers(
-                        "/register",
-                        "/login",
-
+                        "/user/register",
+                        "/user/login",
                         "/sign",
                         "/util/**",
                         "/school/**",
