@@ -11,20 +11,21 @@ import java.util.UUID;
 
 @Component
 public class MyMetaObjectHandler implements MetaObjectHandler {
-    private Timestamp timestamp = new Timestamp(new Date().getTime());
 
     @Override
     public void insertFill(MetaObject metaObject) {
-        this.setFieldValByName("register_time",timestamp,metaObject);
-        this.setFieldValByName("update_time",timestamp,metaObject);
-        this.setFieldValByName("is_available",true,metaObject);
-        this.setFieldValByName("is_expires",false,metaObject);
-        this.setFieldValByName("is_lock",false,metaObject);
+
+        this.strictInsertFill(metaObject,"registerTime",LocalDateTime.class,LocalDateTime.now());
+        this.strictInsertFill(metaObject,"updateTime",LocalDateTime.class,LocalDateTime.now());
+        this.strictInsertFill(metaObject,"isAvailable",Boolean.class,true);
+        this.strictInsertFill(metaObject,"isExpires",Boolean.class,false);
+        this.strictInsertFill(metaObject,"isLock",Boolean.class,false);
+
 
     }
 
     @Override
     public void updateFill(MetaObject metaObject) {
-        this.setFieldValByName("update_time",LocalDateTime.now(),metaObject);
+        this.strictUpdateFill(metaObject,"updateTime",LocalDateTime.class,LocalDateTime.now());
     }
 }

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Component
@@ -47,9 +48,9 @@ public class MyAuthenticationProvider implements AuthenticationProvider {
             throw new LockedException("凭证已过期");
         }
         MyUser user = userMapper.selectUsersByUsername(username);
-        Timestamp timestamp = new Timestamp(new Date().getTime());
-        user.setUpdateTime(timestamp);
-        user.setLastLoginTime(timestamp);
+        LocalDateTime localDateTime = LocalDateTime.now();
+        user.setUpdateTime(localDateTime);
+        user.setLastLoginTime(localDateTime);
         userMapper.update(user, new QueryWrapper<MyUser>().eq("uuid", user.getUuid()));
         return new UsernamePasswordAuthenticationToken(username, password, userDetails.getAuthorities());
 

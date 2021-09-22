@@ -26,6 +26,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -120,6 +121,14 @@ public class UserServiceImpl implements UserService {
                 new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         String token = jwtTokenUtil.generateToken(userDetails);
+
+//        更新数据库内上次登录时间
+        MyUser user = userMapper.selectUsersByUsername(loginAccount.getUsername());
+        LocalDateTime localDateTime = LocalDateTime.now();
+        user.setUpdateTime(localDateTime);
+        user.setLastLoginTime(localDateTime);
+        userMapper.update(user, new QueryWrapper<MyUser>().eq("uuid", user.getUuid()));
+
         Map<String, String> tokenMap = new HashMap<>();
         tokenMap.put("token", token);
         tokenMap.put("tokenHead", tokenHead);
