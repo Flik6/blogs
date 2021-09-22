@@ -52,7 +52,7 @@ public class UtilServiceImpl implements UtilService {
         Map<String, String> urlParam = myUtils.getUrlParam(url);
         String e = urlParam.get("e");
 
-        String text = "jparam={'empids': '" + userId + "', 'loctime': '" + sdf.format(date) + "', 'coordinate': '113.94837060116612,22.558772759333863', 'Location': '', 'photoid': '', 'description': ''}";
+        String text = "jparam={'empids': '" + userId + "', 'loctime': '" + sdf.format(date) + "', 'coordinate': '113.94837060116612,22.558772759333863', 'Location': '广东省深圳市南山区新西路9', 'photoid': '', 'description': ''}";
         String s = null;
         try {
             s = new String(text.getBytes("UTF-8"));

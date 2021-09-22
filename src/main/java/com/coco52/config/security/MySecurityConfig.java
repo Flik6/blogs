@@ -35,9 +35,9 @@ import javax.servlet.Filter;
  *
  */
 public class MySecurityConfig extends WebSecurityConfigurerAdapter {
-
-    @Autowired
-    private MyAuthenticationProvider myAuthenticationProvider;
+//
+//    @Autowired
+//    private MyAuthenticationProvider myAuthenticationProvider;
 
     @Autowired
     private UserDetailsServiceImpl UserDetailsServiceImpl;

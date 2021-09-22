@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static net.sf.jsqlparser.util.validation.metadata.NamedObject.user;
+
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
@@ -123,11 +125,15 @@ public class UserServiceImpl implements UserService {
         String token = jwtTokenUtil.generateToken(userDetails);
 
 //        更新数据库内上次登录时间
+        //数据库内查出的完整user
         MyUser user = userMapper.selectUsersByUsername(loginAccount.getUsername());
         LocalDateTime localDateTime = LocalDateTime.now();
-        user.setUpdateTime(localDateTime);
-        user.setLastLoginTime(localDateTime);
-        userMapper.update(user, new QueryWrapper<MyUser>().eq("uuid", user.getUuid()));
+
+        //用于更新用户字段的实体
+        MyUser updateUser = new MyUser();
+        updateUser.setUpdateTime(localDateTime);
+        updateUser.setLastLoginTime(localDateTime);
+        userMapper.update(updateUser, new QueryWrapper<MyUser>().eq("uuid", user.getUuid()));
 
         Map<String, String> tokenMap = new HashMap<>();
         tokenMap.put("token", token);

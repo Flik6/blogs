@@ -20,7 +20,12 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @ApiOperation(value = "登录方法", notes = "只需要传入必要的参数")
+    /**
+     * 登录方法
+     * @param account
+     * @return
+     */
+    @ApiOperation(value = "登录方法", notes = "只需要传入用户名 密码")
     @PostMapping("/login")
     public RespMsg login(@RequestBody Account account) {
         return userService.login(account);
