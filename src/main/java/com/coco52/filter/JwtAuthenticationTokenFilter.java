@@ -1,7 +1,7 @@
 package com.coco52.filter;
 
 import com.alibaba.fastjson.JSON;
-import com.coco52.entity.RespMsg;
+import com.coco52.entity.RespResult;
 import com.coco52.util.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,9 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -48,7 +46,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                 response.setCharacterEncoding("utf-8");
                 response.setContentType("application/json");
                 PrintWriter writer = response.getWriter();
-                RespMsg fail = RespMsg.fail("token已过期,请重新登陆!");
+                RespResult fail = RespResult.fail("token已过期,请重新登陆!");
                 fail.setCode(499);
                 writer.write(JSON.toJSONString(fail));
                 writer.flush();

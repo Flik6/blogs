@@ -58,4 +58,10 @@ public class MyUser {
     @ApiModelProperty("头像")
     private String avatar;
 
+    @ApiModelProperty("性别")
+    private Boolean gender;
+
+    @ApiModelProperty("邮箱")
+    private String email;
+
 }

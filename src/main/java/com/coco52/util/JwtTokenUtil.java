@@ -1,5 +1,6 @@
 package com.coco52.util;
 
+import com.coco52.entity.MyUser;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,6 +18,24 @@ public class JwtTokenUtil {
     private String secret;
     @Value("${jwt.expiration}")
     private Long expiration;
+
+    /**
+     * 根据用户信息生成荷载
+     *
+     * @param userDetails
+     * @return
+     */
+    public String generateToken(UserDetails userDetails, MyUser user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
+        claims.put("uuid",user.getUuid());
+        claims.put("nickname",user.getNickname());
+        claims.put("avatar",user.getAvatar());
+        claims.put(CLAIM_KEY_CREATED, new Date());
+        return generateToken(claims);
+    }
+
+
 
     /**
      * 根据用户信息生成荷载
@@ -46,6 +65,21 @@ public class JwtTokenUtil {
         }
         return username;
 
+    }
+    /**
+     * 根据token获取uuid
+     * @param token
+     * @return
+     */
+    public String getUUIDFromToken(String token){
+        String uuid;
+        Claims claimsFormToken = getClaimsFormToken(token);
+        try {
+            uuid = (String)claimsFormToken.get("uuid");
+        } catch (Exception e) {
+            uuid=null;
+        }
+        return uuid;
     }
 
     /**

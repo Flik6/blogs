@@ -63,12 +63,14 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .headers()
                 .cacheControl();
+        //      添加自定义未授权、未登录、登录结果返回
+        http.exceptionHandling()
+                .authenticationEntryPoint(customAuthenticationEntryPoint)
+                .accessDeniedHandler(this.customAccessDeniedHandler);
 //      添加jwt登录授权过滤器
         http.addFilterBefore(jwtAuthenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-//      添加自定义未授权、未登录、登录结果返回
-        http.exceptionHandling()
-                .accessDeniedHandler(customAccessDeniedHandler)
-                .authenticationEntryPoint(customAuthenticationEntryPoint);
+
+
 
     }
 
@@ -78,6 +80,8 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(
                         "/user/register",
                         "/user/login",
+                        "/user/getAvatar/**",
+                        "/home/**",
                         "/sign",
                         "/util/**",
                         "/school/**",
