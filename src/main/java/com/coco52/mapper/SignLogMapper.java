@@ -1,9 +1,9 @@
 package com.coco52.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.coco52.entity.AccessLog;
+import com.coco52.entity.SignLog;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AccessLogMapper extends BaseMapper<AccessLog> {
+public interface SignLogMapper extends BaseMapper<SignLog> {
 }

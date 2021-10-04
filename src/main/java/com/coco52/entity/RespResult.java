@@ -1,5 +1,6 @@
 package com.coco52.entity;
 
+import com.coco52.enums.ResultCode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -27,6 +28,9 @@ public class RespResult {
     public static RespResult success(Integer code, String msg, Object data) {
         return new RespResult(code, msg, data);
     }
+    public static RespResult success(ResultCode resultCode, Object data) {
+        return new RespResult(resultCode.getCode(), resultCode.getMessage(), data);
+    }
 
 
     public static RespResult fail(String msg) {
@@ -37,6 +41,9 @@ public class RespResult {
     }
     public static RespResult fail(Integer code, String msg, Object data) {
         return new RespResult(code, msg, data);
+    }
+    public static RespResult fail(ResultCode resultCode, Object data) {
+        return new RespResult(resultCode.getCode(), resultCode.getMessage(), data);
     }
 
 

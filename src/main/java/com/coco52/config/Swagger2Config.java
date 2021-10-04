@@ -33,7 +33,7 @@ public class Swagger2Config {
 
     private List<SecurityContext> securityContext() {
         List<SecurityContext> result = new ArrayList<>();
-        result.add(getContextByPath("/login"));
+        result.add(getContextByPath("/user/login"));
         return result;
     }
 

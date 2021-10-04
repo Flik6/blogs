@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
         wrapper.eq("username", registerUser.getUsername());
         Account account = accountMapper.selectOne(wrapper);
         if (account != null) {
-            return RespResult.fail("账号已被注册,请更改您的用户名！");
+            return RespResult.fail(ResultCode.USER_HAS_BEEN_REGISTERED,null);
         }
         registerUser.setUuid(UUID.randomUUID().toString().replace("-", "").toLowerCase());
         registerUser.setPassword(passwordEncoder.encode(registerUser.getPassword()));
@@ -92,10 +92,9 @@ public class UserServiceImpl implements UserService {
         userMapper.insert(myUser);
         roleAccountMapper.insert(new RoleAccount(null, registerUser.getUuid(), 3));
         if (flag == 1) {
-
-            return RespResult.success("注册成功！");
+            return RespResult.success(ResultCode.USER_REGISTER_SUCCESS,null);
         } else {
-            return RespResult.success("未知错误，请联系管理员！");
+            return RespResult.success(ResultCode.USER_UNKNOWN_ERROR,null);
         }
     }
 
@@ -121,22 +120,20 @@ public class UserServiceImpl implements UserService {
             return new RespResult(400, e.getMessage(), null);
         }
         if (userDetails == null || !passwordEncoder.matches(loginAccount.getPassword(), userDetails.getPassword())) {
-            return RespResult.fail("用户名或密码错误！");
+            return RespResult.fail(ResultCode.USERNAME_PASSWORD_ERROR,null);
         } else if (!userDetails.isEnabled()) {
-            return RespResult.fail("账户不存在,请联系管理员！");
+            return RespResult.fail(ResultCode.USER_ACCOUNT_NOT_EXIST,null);
         } else if (!userDetails.isAccountNonLocked()) {
-            return RespResult.fail("账号已被封禁,请联系管理员！");
+            return RespResult.fail(ResultCode.USER_ACCOUNT_HAS_BEEN_BAN,null);
         } else if (!userDetails.isCredentialsNonExpired()) {
-            return RespResult.fail("密码凭证已失效,请联系管理员！");
+            return RespResult.fail(ResultCode.USER_PASSWORD_HAS_EXPIRED,null);
         } else if (!userDetails.isAccountNonExpired()) {
-            return RespResult.fail("账号已过期,请联系管理员！");
+            return RespResult.fail(ResultCode.USER_ACCOUNT_HAS_EXPIRED,null);
         }
         //更新security登录用户对象
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
-
 //        更新数据库内上次登录时间
         //数据库内查出的完整user
         MyUser user = userMapper.selectUsersByUsername(loginAccount.getUsername());
@@ -156,7 +153,7 @@ public class UserServiceImpl implements UserService {
         tokenMap.put("tokenHead", tokenHead);
         tokenMap.put("username", loginAccount.getUsername());
         tokenMap.put("uuid", user.getUuid());
-        return RespResult.success("登陆成功", tokenMap);
+        return RespResult.success(ResultCode.USER_LOGIN_SUCCESS, tokenMap);
     }
 
 
@@ -204,7 +201,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public RespResult banUser(MyUser myUser) {
         if (ObjectUtils.isEmpty(myUser.getUuid())) {
-            return RespResult.fail("UUID为空,请检查之后重试！");
+            return RespResult.fail(ResultCode.USER_UUID_iS_EMPTY,null);
         }
         UpdateWrapper<MyUser> myUserUpdateWrapper = new UpdateWrapper<>();
         myUserUpdateWrapper.eq("uuid", myUser.getUuid());
@@ -212,7 +209,7 @@ public class UserServiceImpl implements UserService {
         MyUser myUser1 = new MyUser();
         myUser1.setIsLock(true);
         int update = userMapper.update(myUser1, myUserUpdateWrapper);
-        return update == 1 ? RespResult.success("成功封禁用户！", myUser.getUuid()) : RespResult.fail("封禁失败,用户可能！", myUser.getUuid());
+        return update == 1 ? RespResult.success(ResultCode.USER_BAN_SUCCESS, myUser.getUuid()) : RespResult.fail(ResultCode.USER_BAN_FAIL, myUser.getUuid());
     }
 
     /**
@@ -224,7 +221,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public RespResult delUser(MyUser myUser) {
         if (ObjectUtils.isEmpty(myUser.getUuid())) {
-            return RespResult.fail("UUID为空,请检查之后重试！");
+            return RespResult.fail(ResultCode.USER_UUID_iS_EMPTY,null);
         }
         UpdateWrapper<MyUser> myUserUpdateWrapper = new UpdateWrapper<>();
         myUserUpdateWrapper.eq("uuid", myUser.getUuid());
@@ -249,7 +246,7 @@ public class UserServiceImpl implements UserService {
         UpdateWrapper<MyUser> myUserUpdateWrapper = new UpdateWrapper<>();
         myUserUpdateWrapper.eq("uuid", uuid);
         int update = userMapper.update(myUser, myUserUpdateWrapper);
-        return update == 1 ? RespResult.success("个人资料更新成功！", myUser.getUuid()) : RespResult.fail("更新个人资料失败,用户可能不存在！", myUser.getUuid());
+        return update == 1 ? RespResult.success(ResultCode.USER_PROFILE_UPDATED_SUCCESSFULLY, myUser.getUuid()) : RespResult.fail(ResultCode.USER_PROFILE_UPDATED_FAIL, myUser.getUuid());
     }
 
     @Override
@@ -269,7 +266,7 @@ public class UserServiceImpl implements UserService {
         if (ObjectUtils.isEmpty(myUsers.getAge())){
             myUsers.setAge(0);
         }
-        return RespResult.success("查询成功！", myUsers);
+        return RespResult.success(ResultCode.SUCCESS, myUsers);
     }
 
     @Override
@@ -317,11 +314,11 @@ public class UserServiceImpl implements UserService {
             }
         }
         if (successNum == 0) {
-            return RespResult.fail(ResultCode.FILE_UPLOAD_ERROR.getCode(), "oh,shit,一个也没上传成功", null);
+            return RespResult.fail(ResultCode.FILE_UPLOAD_ERROR, null);
         } else if (successNum > 0 && successNum < files.length) {
-            return RespResult.success(ResultCode.FILE_PART_UPLOAD_SUCCESS.getCode(), ResultCode.FILE_PART_UPLOAD_SUCCESS.getMessage(), list);
+            return RespResult.success(ResultCode.FILE_PART_UPLOAD_SUCCESS, list);
         } else {
-            return RespResult.success(ResultCode.File_UPLOAD_SUCCESS.getCode(), ResultCode.File_UPLOAD_SUCCESS.getMessage(), list);
+            return RespResult.success(ResultCode.File_UPLOAD_SUCCESS, list);
         }
     }
 
@@ -339,7 +336,7 @@ public class UserServiceImpl implements UserService {
         try {
             realName = FileUtils.saveFile(avatar);
         } catch (Exception e) {
-            return RespResult.fail(ResultCode.USER_AVATAR_UPLOAD_ERROR.getCode(), ResultCode.USER_AVATAR_UPLOAD_ERROR.getMessage(), null);
+            return RespResult.fail(ResultCode.USER_AVATAR_UPLOAD_ERROR, null);
         }
         //   /2021/09/24/asdasdasdasd.png
         UpdateWrapper<MyUser> wrapper = new UpdateWrapper<>();
@@ -348,8 +345,8 @@ public class UserServiceImpl implements UserService {
         myUser.setAvatar(realName);
         int update = userMapper.update(myUser, wrapper);
         return update == 1 ?
-                RespResult.success(ResultCode.USER_AVATAR_UPLOAD_SUCCESS.getCode(), ResultCode.USER_AVATAR_UPLOAD_SUCCESS.getMessage(), null) :
-                RespResult.fail(ResultCode.USER_AVATAR_UPLOAD_ERROR.getCode(), ResultCode.USER_AVATAR_UPLOAD_ERROR.getMessage(), null);
+                RespResult.success(ResultCode.USER_AVATAR_UPLOAD_SUCCESS, null) :
+                RespResult.fail(ResultCode.USER_AVATAR_UPLOAD_ERROR, null);
 
     }
 

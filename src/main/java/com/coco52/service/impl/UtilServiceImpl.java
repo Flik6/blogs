@@ -1,14 +1,14 @@
 package com.coco52.service.impl;
 
+import cn.hutool.http.useragent.UserAgent;
+import cn.hutool.http.useragent.UserAgentUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.coco52.entity.AccessLog;
 import com.coco52.entity.RespResult;
-import com.coco52.mapper.AccessLogMapper;
+import com.coco52.entity.SignLog;
+import com.coco52.mapper.SignLogMapper;
 import com.coco52.service.UtilService;
 import com.coco52.util.MyUtils;
-import eu.bitwalker.useragentutils.Browser;
-import eu.bitwalker.useragentutils.OperatingSystem;
-import eu.bitwalker.useragentutils.UserAgent;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Map;
 
@@ -31,7 +32,7 @@ public class UtilServiceImpl implements UtilService {
     private RestTemplate restTemplate;
 
     @Autowired
-    private AccessLogMapper accessLogMapper;
+    private SignLogMapper signLogMapper;
     @Autowired
     private MyUtils myUtils;
 
@@ -75,26 +76,19 @@ public class UtilServiceImpl implements UtilService {
         long l = date.getTime() - parseDate.getTime();
         boolean b = Math.abs(l) > 0;
         String agent = request.getHeader("User-Agent");
-        UserAgent userAgent = UserAgent.parseUserAgentString(agent);
-        Browser browser = userAgent.getBrowser();
-        OperatingSystem os = userAgent.getOperatingSystem();
+        UserAgent ua = UserAgentUtil.parse(agent);
 
-        AccessLog accessLog = new AccessLog(
+        SignLog signLog = new SignLog(
                 null,
-                browser.getName(),
-                browser.getBrowserType().getName(),
-                browser.getGroup().toString(),
-                browser.getManufacturer().toString(),
-                browser.getRenderingEngine().toString(),
-                userAgent.getBrowserVersion().toString(),
-                os.getName(),
-                os.getGroup().toString(),
-                os.getManufacturer().toString(),
-                os.getDeviceType().toString(),
-                request.getRemoteAddr(),
-                new Timestamp(new Date().getTime())
+                ua.getBrowser().toString(),
+                ua.getVersion(),
+                ua.getEngine().toString(),
+                ua.getEngineVersion(),
+                ua.getOs().toString(),
+                ua.getPlatform().toString(),
+                LocalDateTime.now()
         );
-        accessLogMapper.insert(accessLog);
+        signLogMapper.insert(signLog);
         return b ? RespResult.success("打卡成功！", forEntity.getBody()) : RespResult.fail("Error，签到失败,参数可能填写错误！", forEntity.getBody());
     }
 }

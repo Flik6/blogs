@@ -33,7 +33,7 @@ public class UserController {
      * @param account
      * @return
      */
-    @ApiOperation(value = "登录方法", notes = "只需要传入用户名 密码")
+    @ApiOperation(value = "登录账号", notes = "只需要传入用户名 密码")
     @PostMapping("/login")
     public RespResult login(@RequestBody Account account) {
         return userService.login(account);
@@ -144,6 +144,7 @@ public class UserController {
     public RespResult getAvatar(@PathVariable("uuid") String uuid, HttpServletResponse response){
         // img为图片的二进制流
         BufferedImage image=userService.getAvatar(uuid);
+
         if (ObjectUtils.isEmpty(image)){
             return RespResult.fail(ResultCode.FILE_NOT_FOUND.getCode(),ResultCode.FILE_NOT_FOUND.getMessage(),null);
         }
