@@ -66,9 +66,14 @@ public class ArticleServiceImpl implements ArticleService {
         if (ObjectUtils.isEmpty(article.getTitle()) || ObjectUtils.isEmpty(article.getContent())) {
             return RespResult.fail(ResultCode.ARTICLE_NOT_ALLOW_NULL, null);
         }
+        if (article.getTitle().length()<5 ||article.getContent().length()<5){
+            return RespResult.fail(ResultCode.ARTICLE_TOO_SHORT, null);
+        }
+
+
         String simpleUUID = IdUtil.simpleUUID();
         article.setArticleId(simpleUUID);
-
+        article.setUuid(uuidFromRequest);
         String intro = ObjectUtils.isEmpty(article.getIntro())? article.getTitle():article.getIntro();
         ArticlesInfo articlesInfo = new ArticlesInfo(
                 null,
@@ -76,8 +81,8 @@ public class ArticleServiceImpl implements ArticleService {
                 article.getTitle(),
                 intro,
                 0L,
-                0,
-                null,
+                Integer.parseInt(article.getCategory()),
+                article.getArticleImage(),
                 simpleUUID,
                 LocalDateTime.now(),
                 article.getExternalLink()

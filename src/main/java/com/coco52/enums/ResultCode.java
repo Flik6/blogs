@@ -60,13 +60,13 @@ public enum ResultCode {
 
     //文章类相关错误
     ARTICLE_SUCCESSFULLY_PUBLISHED(4000,"文章发表成功!"),
-    ARTICLE_GET_SUCCESS(4001,"文章获取成功!"),
-    ARTICLE_INFO_GET_SUCCESS(4002,"文章详细信息获取成功!"),
+    ARTICLE_GET_SUCCESS(40011,"文章获取成功!"),
+    ARTICLE_INFO_GET_SUCCESS(40021,"文章详细信息获取成功!"),
 
     ARTICLE_NOT_ALLOW_NULL(4101,"文章标题或内容为空,请检查"),
     ARTICLE_NOT_GET_CONTENT(4102,"oh,no,文章找不到了 o((>ω< ))o"),
     ARTICLE_INFO_GET_ERROR(4103,"怎么找不到这篇文章的详细信息呢 u＞︿＜"),
-
+    ARTICLE_TOO_SHORT(4104,"啊啊啊，不可以这么短啊 o((>ω< ))o")
 
     ;
 

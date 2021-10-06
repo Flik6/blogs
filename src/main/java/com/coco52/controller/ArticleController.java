@@ -6,6 +6,7 @@ import com.coco52.service.ArticleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,7 @@ public class ArticleController {
     private ArticleService articleService;
 
     @ApiOperation("发表文章")
+    @PreAuthorize("hasAnyAuthority('admin','secretary','user')")
     @PostMapping("/articles")
     public RespResult publishAnArticle(@RequestBody Article article,HttpServletRequest request){
         RespResult respResult=articleService.publishAnArticle(article,request);
