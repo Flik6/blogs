@@ -4,6 +4,7 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.coco52.entity.Article;
 import com.coco52.entity.ArticlesInfo;
 import com.coco52.entity.RespResult;
@@ -111,6 +112,16 @@ public class ArticleServiceImpl implements ArticleService {
         if (ObjectUtils.isEmpty(article)){
             return RespResult.fail(ResultCode.ARTICLE_NOT_GET_CONTENT,null);
         }
+        UpdateWrapper<ArticlesInfo> updateWrapper = new UpdateWrapper<>();
+        //查询当前阅读量多少
+        QueryWrapper<ArticlesInfo> infoQueryWrapper = new QueryWrapper<>();
+        infoQueryWrapper.select("read_counts").eq("article_id",articleId);
+        ArticlesInfo articlesInfo = articlesInfoMapper.selectOne(infoQueryWrapper);
+        //使阅读量增加1
+        articlesInfo.setReadCounts(articlesInfo.getReadCounts()+1);
+        //更新数据库
+        updateWrapper.eq("article_id",articleId);
+        articlesInfoMapper.update(articlesInfo,updateWrapper);
         return RespResult.success(ResultCode.ARTICLE_GET_SUCCESS,article);
     }
 
