@@ -21,7 +21,7 @@ public class SignLog {
     private String browserName;
     private String browserVersion;
     private String browserEngine;
-    private String getBrowserEngineVersion;
+    private String browserEngineVersion;
     private String osName;
     private String osPlatform;
     private LocalDateTime signTime;

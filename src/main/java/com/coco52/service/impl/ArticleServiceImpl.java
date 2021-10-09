@@ -11,6 +11,7 @@ import com.coco52.enums.ResultCode;
 import com.coco52.mapper.ArticleMapper;
 import com.coco52.mapper.ArticlesInfoMapper;
 import com.coco52.service.ArticleService;
+import com.coco52.util.ArticleUtils;
 import com.coco52.util.RequestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,8 @@ import org.springframework.util.ObjectUtils;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static org.apache.logging.log4j.ThreadContext.isEmpty;
 
 @Service
 public class ArticleServiceImpl implements ArticleService {
@@ -69,8 +72,10 @@ public class ArticleServiceImpl implements ArticleService {
         if (article.getTitle().length()<5 ||article.getContent().length()<5){
             return RespResult.fail(ResultCode.ARTICLE_TOO_SHORT, null);
         }
-
-
+        List<String> imgSrcList = ArticleUtils.getImgSrc(article.getContent());
+        if (!imgSrcList.isEmpty()){
+            article.setArticleImage(imgSrcList.get(0));
+        }
         String simpleUUID = IdUtil.simpleUUID();
         article.setArticleId(simpleUUID);
         article.setUuid(uuidFromRequest);
