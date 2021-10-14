@@ -13,6 +13,7 @@ import com.coco52.mapper.ArticleMapper;
 import com.coco52.mapper.ArticlesInfoMapper;
 import com.coco52.service.ArticleService;
 import com.coco52.util.ArticleUtils;
+import com.coco52.util.EmojiConverterUtil;
 import com.coco52.util.RequestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import org.springframework.util.ObjectUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 import static org.apache.logging.log4j.ThreadContext.isEmpty;
@@ -47,11 +49,11 @@ public class ArticleServiceImpl implements ArticleService {
 
         QueryWrapper<ArticlesInfo> queryWrapper = new QueryWrapper();
         queryWrapper.eq("uuid", uuid);
-        List articleList = articlesInfoMapper.selectList(queryWrapper);
-        if (articleList == null) {
+        List articleInfoList = articlesInfoMapper.selectList(queryWrapper);
+        if (articleInfoList == null) {
             RespResult.fail("未获取到文章");
         }
-        return RespResult.success(ResultCode.SUCCESS, articleList);
+        return RespResult.success(ResultCode.SUCCESS, articleInfoList);
     }
 
     public RespResult selectArticleByRandom(Integer num) {
@@ -67,20 +69,34 @@ public class ArticleServiceImpl implements ArticleService {
     public RespResult publishAnArticle(Article article, HttpServletRequest request) {
         String uuidFromRequest = requestUtils.getUUIDFromRequest(request);
         Assert.notEmpty(uuidFromRequest);
+        //获取文章内容
+        String content = article.getContent();
+        //判断文章内容或标题不为空
         if (ObjectUtils.isEmpty(article.getTitle()) || ObjectUtils.isEmpty(article.getContent())) {
             return RespResult.fail(ResultCode.ARTICLE_NOT_ALLOW_NULL, null);
         }
+        //判断文章标题或内容长度是否小于5
         if (article.getTitle().length()<5 ||article.getContent().length()<5){
             return RespResult.fail(ResultCode.ARTICLE_TOO_SHORT, null);
         }
-        List<String> imgSrcList = ArticleUtils.getImgSrc(article.getContent());
-        if (!imgSrcList.isEmpty()){
-            article.setArticleImage(imgSrcList.get(0));
+        //如果文章banner为空 设置文章的第一个图片为banner
+        if (article.getArticleImage().isEmpty()){
+            //将文章中第一个图片设为banner
+            List<String> imgSrcList = ArticleUtils.getImgSrc(content);
+            if (!imgSrcList.isEmpty()){
+                article.setArticleImage(imgSrcList.get(0));
+            }else {
+                article.setArticleImage("https://api.yimian.xyz/img?type=head?v="+new Date());
+            }
         }
+
+        //设置文章id
         String simpleUUID = IdUtil.simpleUUID();
         article.setArticleId(simpleUUID);
         article.setUuid(uuidFromRequest);
+        //设置文章简介如果没有文章简介则将文章标题设为简介
         String intro = ObjectUtils.isEmpty(article.getIntro())? article.getTitle():article.getIntro();
+        //初始化文章信息
         ArticlesInfo articlesInfo = new ArticlesInfo(
                 null,
                 uuidFromRequest,
@@ -93,6 +109,8 @@ public class ArticleServiceImpl implements ArticleService {
                 LocalDateTime.now(),
                 article.getExternalLink()
         );
+        //将文章内容设置转换为
+        article.setContent(EmojiConverterUtil.emojiConvert1(content));
         int articleInsert = articleMapper.insert(article);
         int articleInfoInsert = articlesInfoMapper.insert(articlesInfo);
         Assert.isTrue(articleInsert == articleInfoInsert && articleInsert == 1);
@@ -122,6 +140,8 @@ public class ArticleServiceImpl implements ArticleService {
         //更新数据库
         updateWrapper.eq("article_id",articleId);
         articlesInfoMapper.update(articlesInfo,updateWrapper);
+        //将utf83字符保存的emoji转换为4字符的emoji
+        article.setContent(EmojiConverterUtil.emojiRecovery2(article.getContent()));
         return RespResult.success(ResultCode.ARTICLE_GET_SUCCESS,article);
     }
 
