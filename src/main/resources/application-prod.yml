@@ -1,0 +1,60 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: blogs
+  datasource:
+    dynamic:
+      primary: master #设置默认的数据源或者数据源组,默认值即为master
+      strict: false #严格匹配数据源,默认false. true未匹配到指定数据源时抛异常,false使用默认数据源
+#      hikari:
+#        min-idle: 10
+#        idle-timeout: 60000
+#        max-pool-size: 20
+#        connection-timeout: 60000
+#        connection-test-query: SELECT 1
+#        max-lifetime: 0
+      datasource:
+        master:
+#          type: com.zaxxer.hikari.HikariDataSource
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://192.168.0.25:3306/blog?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+          username: root
+          password: flik0424
+        words:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://192.168.0.25:3306/thesaurus?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+          username: root
+          password: flik0424
+  # thymeleaf模板格式
+  thymeleaf:
+    cache: false
+    encoding: UTF-8
+    mode: HTML
+    servlet:
+      content-type: text/html
+    prefix: classpath:/templates/
+    suffix: .html
+  devtools:
+    restart:
+      enabled: true
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 20MB
+      max-request-size: 30MB
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+
+jwt:
+#  JWT存储的请求头
+  tokenHeader: Authorization
+#  加密密钥
+  secret: blogs-secret
+#  过期时间 60*60*24
+  expiration: 86400
+#  JWT负载中拿到开头
+  tokenHead: Bearer
+

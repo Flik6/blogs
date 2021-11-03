@@ -1,12 +1,13 @@
 package com.coco52.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.coco52.entity.BlogInfo;
 import com.coco52.entity.RespResult;
 import com.coco52.entity.WechatUserInfo;
-import com.coco52.mapper.BlogInfoMapper;
-import com.coco52.mapper.WechatUserInfoMapper;
+import com.coco52.mapper.blog.BlogInfoMapper;
+import com.coco52.mapper.blog.WechatUserInfoMapper;
 import com.coco52.service.HomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import java.time.LocalDateTime;
 
 @Service
+@DS("master")
 public class HomeServiceImpl implements HomeService {
 
     @Autowired

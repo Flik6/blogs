@@ -1,16 +1,16 @@
 package com.coco52.service.impl;
 
 import cn.hutool.core.lang.Assert;
-import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.IdUtil;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.coco52.entity.Article;
 import com.coco52.entity.ArticlesInfo;
 import com.coco52.entity.RespResult;
 import com.coco52.enums.ResultCode;
-import com.coco52.mapper.ArticleMapper;
-import com.coco52.mapper.ArticlesInfoMapper;
+import com.coco52.mapper.blog.ArticleMapper;
+import com.coco52.mapper.blog.ArticlesInfoMapper;
 import com.coco52.service.ArticleService;
 import com.coco52.util.ArticleUtils;
 import com.coco52.util.EmojiConverterUtil;
@@ -25,9 +25,8 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
-import static org.apache.logging.log4j.ThreadContext.isEmpty;
-
 @Service
+@DS("master")
 public class ArticleServiceImpl implements ArticleService {
     /**
      * 文章详细信息Mapper

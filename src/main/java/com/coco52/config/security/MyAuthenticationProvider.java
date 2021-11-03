@@ -1,23 +1,18 @@
 package com.coco52.config.security;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.coco52.config.security.UserDetailsServiceImpl;
 import com.coco52.entity.MyUser;
-import com.coco52.mapper.UserMapper;
+import com.coco52.mapper.blog.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 //@Component
 public class MyAuthenticationProvider implements AuthenticationProvider {

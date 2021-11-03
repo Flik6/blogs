@@ -2,8 +2,10 @@ package com.coco52.config.security;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.coco52.entity.*;
-import com.coco52.mapper.*;
-import com.coco52.service.UserService;
+import com.coco52.mapper.blog.AccountMapper;
+import com.coco52.mapper.blog.RoleAccountMapper;
+import com.coco52.mapper.blog.RoleMapper;
+import com.coco52.mapper.blog.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,7 +14,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 

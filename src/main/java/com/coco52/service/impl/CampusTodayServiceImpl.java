@@ -1,10 +1,11 @@
 package com.coco52.service.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.coco52.entity.RespResult;
 import com.coco52.entity.SchoolUser;
-import com.coco52.mapper.SchoolUserMapper;
+import com.coco52.mapper.blog.SchoolUserMapper;
 import com.coco52.service.CampusTodayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 @Service
+@DS("master")
 public class CampusTodayServiceImpl implements CampusTodayService {
 
     @Autowired

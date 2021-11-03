@@ -66,8 +66,17 @@ public enum ResultCode {
     ARTICLE_NOT_ALLOW_NULL(4101,"文章标题或内容为空,请检查"),
     ARTICLE_NOT_GET_CONTENT(4102,"oh,no,文章找不到了 o((>ω< ))o"),
     ARTICLE_INFO_GET_ERROR(4103,"怎么找不到这篇文章的详细信息呢 u＞︿＜"),
-    ARTICLE_TOO_SHORT(4104,"啊啊啊，不可以这么短啊 o((>ω< ))o")
+    ARTICLE_TOO_SHORT(4104,"啊啊啊，不可以这么短啊 o((>ω< ))o"),
 
+
+    //单词类相关操作 (1000-1199)  5000-5099 成功   5100-5199 错误
+    WORD_BOOKS_GET_SUCCESS(5000,"书本列表获取成功！"),
+    WORD_GET_SUCCESS(5001,"单词列表获取成功！"),
+    WORD_INFO_GET_SUCCESS(5002,"单词信息获取成功~"),
+
+    WORD_BOOKS_GET_FAIL(5100,"没有获得书本列表！(❁´◡`❁)"),
+    WORD_GET_FAIL(5101,"获取失败！(┬┬﹏┬┬)"),
+    WORD_INFO_GET_FAIL(5102,"单词详细信息获取失败！ (┬┬﹏┬┬)")
     ;
 
     ResultCode(Integer code, String message) {

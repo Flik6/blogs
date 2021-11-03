@@ -1,48 +1,14 @@
+
 spring:
-  application:
-    name: blogs
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://121.37.14.30:3306/blog?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-    url: jdbc:mysql://192.168.0.25:3306/blog?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-    username: root
-    password: flik0424
-  # thymeleaf模板格式
-  thymeleaf:
-    cache: false
-    encoding: UTF-8
-    mode: HTML
-    servlet:
-      content-type: text/html
-    prefix: classpath:/templates/
-    suffix: .html
-  devtools:
-    restart:
-      enabled: true
-  servlet:
-    multipart:
-      enabled: true
-      max-file-size: 20MB
-      max-request-size: 30MB
-
-#  security:
-#    user:
-#      name: admin
-#      password: admin
-server:
-  port: 8081
-mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-    map-underscore-to-camel-case: true
-
+  profiles:
+    active: prod
 jwt:
-#  JWT存储的请求头
+  #  JWT存储的请求头
   tokenHeader: Authorization
-#  加密密钥
+  #  加密密钥
   secret: blogs-secret
-#  过期时间 60*60*24
+  #  过期时间 60*60*24
   expiration: 86400
-#  JWT负载中拿到开头
+  #  JWT负载中拿到开头
   tokenHead: Bearer
 

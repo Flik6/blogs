@@ -3,9 +3,10 @@ package com.coco52.service.impl;
 import cn.hutool.http.useragent.UserAgent;
 import cn.hutool.http.useragent.UserAgentUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.coco52.entity.RespResult;
 import com.coco52.entity.SignLog;
-import com.coco52.mapper.SignLogMapper;
+import com.coco52.mapper.blog.SignLogMapper;
 import com.coco52.service.UtilService;
 import com.coco52.util.MyUtils;
 
@@ -19,7 +20,6 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.Map;
 
 @Service
+@DS("master")
 public class UtilServiceImpl implements UtilService {
     @Autowired
     private RestTemplate restTemplate;

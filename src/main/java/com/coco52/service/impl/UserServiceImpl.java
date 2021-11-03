@@ -1,18 +1,18 @@
 package com.coco52.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.coco52.entity.*;
 import com.coco52.entity.RespResult;
 import com.coco52.enums.ResultCode;
-import com.coco52.mapper.AccountMapper;
-import com.coco52.mapper.RoleAccountMapper;
-import com.coco52.mapper.UserMapper;
+import com.coco52.mapper.blog.AccountMapper;
+import com.coco52.mapper.blog.RoleAccountMapper;
+import com.coco52.mapper.blog.UserMapper;
 import com.coco52.service.UserService;
 import com.coco52.util.FileUtils;
 import com.coco52.util.JwtTokenUtil;
-import com.coco52.util.MyUtils;
 import com.coco52.util.RequestUtils;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,17 +31,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.List;
 
 @Service
+@DS("master")
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
@@ -75,7 +74,6 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional(rollbackFor = Exception.class)
     public RespResult registerUser(Account registerUser) {
-        System.out.println(registerUser.getPassword());
         QueryWrapper<Account> wrapper = new QueryWrapper<>();
         wrapper.eq("username", registerUser.getUsername());
         Account account = accountMapper.selectOne(wrapper);

@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
 import java.nio.charset.StandardCharsets;
 
 @SpringBootApplication
-@MapperScan("com.coco52.mapper")
+@MapperScan(basePackages ={"com.coco52.mapper"})
 public class BlogsApplication {
 
     public static void main(String[] args) {

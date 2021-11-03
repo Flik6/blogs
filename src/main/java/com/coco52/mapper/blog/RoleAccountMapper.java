@@ -1,4 +1,4 @@
-package com.coco52.mapper;
+package com.coco52.mapper.blog;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.springframework.stereotype.Repository;

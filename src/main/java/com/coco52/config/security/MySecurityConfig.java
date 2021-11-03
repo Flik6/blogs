@@ -83,6 +83,7 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
                         "/user/getAvatar/**",
                         "/article/**",
                         "/home/**",
+                        "/word/**",
                         "/sign",
                         "/util/**",
                         "/school/**",
