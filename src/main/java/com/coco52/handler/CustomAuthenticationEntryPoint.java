@@ -26,7 +26,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         httpServletResponse.setContentType("application/json");
         httpServletResponse.setStatus(httpServletResponse.SC_UNAUTHORIZED);
         PrintWriter writer = httpServletResponse.getWriter();
-        RespResult fail = RespResult.fail("请求"+httpServletRequest.getRequestURI()+"  "+httpServletRequest.getMethod()+", 访问认证失败，没有访问权限!",exception.getMessage());
+        RespResult fail = RespResult.fail("请求"+httpServletRequest.getRequestURI()+"-"+httpServletRequest.getMethod()+", 访问认证失败，没有访问权限!",exception.getMessage());
         fail.setCode(401);
         writer.write(JSON.toJSONString(fail));
         writer.flush();

@@ -30,18 +30,18 @@ public class WordServiceImpl implements WordService {
     @Autowired
     private PhraseMapper phraseMapper;
 
-    //近义词
+    //近义词mapper
     @Autowired
     private SynonymsMapper synonymsMapper;
 
     @Autowired
     private WordsMapper wordsMapper;
 
-
+    //例句mapper
     @Autowired
     private ExampleSentenceMapper exampleSentenceMapper;
 
-
+    //获取单词书本列表
     @Override
     public RespResult getBookList() {
         QueryWrapper<Books> queryWrapper = new QueryWrapper<>();
@@ -49,7 +49,7 @@ public class WordServiceImpl implements WordService {
         List<Books> books = booksMapper.selectList(queryWrapper);
         return books.size() == 0 ? RespResult.fail(ResultCode.WORD_BOOKS_GET_FAIL, null) : RespResult.success(ResultCode.WORD_BOOKS_GET_SUCCESS, books);
     }
-
+    //默认获取50个单词
     @Override
     public RespResult getWordsList(Integer current, String bookId) {
         Page<Words> page = new Page<Words>(current, 50);//参数一是当前页，参数二是每页个数
@@ -62,6 +62,8 @@ public class WordServiceImpl implements WordService {
 
     }
 
+
+    //根据单词id获取自定义（同根词(sameRoot)，例句(exampleSentence),短语，近义词等详细信息）
     @Override
     public RespResult GetWordInfo(String wordId, String options) {
         QueryWrapper<Words> wordsQueryWrapper = new QueryWrapper<>();
@@ -70,9 +72,9 @@ public class WordServiceImpl implements WordService {
         if (count == 0) {
             return RespResult.fail(ResultCode.WORD_INFO_GET_FAIL, null);
         }
+        QueryWrapper<Synonyms> synonymsQueryWrapper = new QueryWrapper<>();
         switch (options) {
             case "synonyms": {
-                QueryWrapper<Synonyms> synonymsQueryWrapper = new QueryWrapper<>();
                 synonymsQueryWrapper.eq("word_id", wordId);
                 Synonyms synonyms = synonymsMapper.selectOne(synonymsQueryWrapper);
                 if (synonyms.getWord() == null) {
