@@ -1,5 +1,7 @@
 package com.coco52.service.impl;
 
+import cn.hutool.core.codec.Base64;
+import cn.hutool.core.util.ZipUtil;
 import cn.hutool.http.useragent.UserAgent;
 import cn.hutool.http.useragent.UserAgentUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -19,12 +21,14 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Map;
+import java.util.zip.ZipException;
 
 @Service
 @DS("master")
@@ -92,4 +96,18 @@ public class UtilServiceImpl implements UtilService {
         signLogMapper.insert(signLog);
         return b ? RespResult.success("打卡成功！", forEntity.getBody()) : RespResult.fail("Error，签到失败,参数可能填写错误！", forEntity.getBody());
     }
+
+    @Override
+    public RespResult parseJson(String jsons) {
+        String unZlibHtml =null;
+        byte[] decodeStr = Base64.decode(jsons);
+        try {
+            unZlibHtml = ZipUtil.unZlib(decodeStr, "utf-8");
+        }catch (Exception e){
+            return RespResult.fail(e.getMessage(),"解析时发生错误，请检查提交的content是否错误");
+        }
+
+        return RespResult.success("解析成功！", unZlibHtml);
+    }
+
 }

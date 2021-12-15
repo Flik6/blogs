@@ -23,4 +23,14 @@ public class UtilController {
         return sign;
 //        return RespMsg.success("111");
     }
+
+    @PostMapping("/parse")
+    @ResponseBody
+    public RespResult parse(@RequestBody String jsons) {
+        RespResult sign = utilService.parseJson(jsons);
+        return sign;
+//        return RespMsg.success("111");
+    }
+
+
 }
