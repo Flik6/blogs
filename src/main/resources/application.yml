@@ -1,7 +1,7 @@
 
 spring:
   profiles:
-    active: prod
+    active: dev
 jwt:
   #  JWT存储的请求头
   tokenHeader: Authorization

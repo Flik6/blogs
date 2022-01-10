@@ -94,6 +94,7 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
                         "/css/**",
                         "/images/**",
                         "/favicon.ico",
+                        "/logo.png",
                         "/doc.html",//   swagger2放行路径
                         "/webjars/**",
                         "/swagger-resources/**",

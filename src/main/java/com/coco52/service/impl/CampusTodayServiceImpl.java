@@ -27,10 +27,6 @@ public class CampusTodayServiceImpl implements CampusTodayService {
         if (user.getUsername() == "" ||
                 user.getPassword() == "" ||
                 user.getEmail() == "" ||
-                user.getAddress() == "" ||
-                user.getUsername() == "" ||
-                user.getPassword() == "" ||
-                user.getEmail() == "" ||
                 user.getAddress() == ""
         ) {
             return RespResult.fail("任务创建失败！请检查信息是否填写完整");
