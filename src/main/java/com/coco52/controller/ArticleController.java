@@ -37,6 +37,7 @@ public class ArticleController {
     }
 
     @ApiOperation(value = "查询文章详细信息",notes = "根据文章id查询文章详细信息")
+    @PreAuthorize("hasAnyAuthority('admin','secretary','user')")
     @GetMapping("/info/{articleId}")
     public RespResult getArticleInfo(@PathVariable("articleId") String articleId){
         RespResult respResult=articleService.getArticleInfo(articleId);

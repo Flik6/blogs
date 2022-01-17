@@ -92,6 +92,7 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
                         "/index",
                         "/",
                         "/css/**",
+                        "/js/**",
                         "/images/**",
                         "/favicon.ico",
                         "/logo.png",
