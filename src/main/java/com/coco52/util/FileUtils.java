@@ -11,6 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -19,7 +21,28 @@ import java.util.UUID;
 @Slf4j
 public class FileUtils {
 
-    public static final String uploadDir ="/root/project/files";
+    public static final String UPLOAD_DIR ="/root/project/files";
+
+    /**
+     * 获取上传文件的md5
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    public static String getMd5(MultipartFile file) {
+        try {
+            //获取文件的byte信息
+            byte[] uploadBytes = file.getBytes();
+            // 拿到一个MD5转换器
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            byte[] digest = md5.digest(uploadBytes);
+            //转换为16进制
+            return new BigInteger(1, digest).toString(16);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return null;
+    }
 
     /**
      * 判断文件大小
@@ -72,7 +95,7 @@ public class FileUtils {
         }
 
         // 生成  /root/project/files/2021/08/23/abc.text 文件
-        String targetDir = uploadDir + separator + format;
+        String targetDir = UPLOAD_DIR + separator + format;
 
         File folder = new File(targetDir);
         if (!folder.exists()) {

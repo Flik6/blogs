@@ -38,8 +38,7 @@ public class UtilServiceImpl implements UtilService {
 
     @Autowired
     private SignLogMapper signLogMapper;
-    @Autowired
-    private MyUtils myUtils;
+
 
     @Override
     public RespResult sign(String url, String userId, HttpServletRequest request) {
@@ -50,7 +49,7 @@ public class UtilServiceImpl implements UtilService {
         if (StringUtils.isEmpty(url)) {
             return RespResult.fail("url的参数不允许为null");
         }
-        Map<String, String> urlParam = myUtils.getUrlParam(url);
+        Map<String, String> urlParam = MyUtils.getUrlParam(url);
         String e = urlParam.get("e");
 
         String text = "jparam={'empids': '" + userId + "', 'loctime': '" + sdf.format(date) + "', 'coordinate': '113.94837060116612,22.558772759333863', 'Location': '广东省深圳市南山区新西路9', 'photoid': '', 'description': ''}";
@@ -109,5 +108,6 @@ public class UtilServiceImpl implements UtilService {
 
         return RespResult.success("解析成功！", unZlibHtml);
     }
+
 
 }

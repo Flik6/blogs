@@ -14,8 +14,15 @@ import com.coco52.service.UserService;
 import com.coco52.util.FileUtils;
 import com.coco52.util.JwtTokenUtil;
 import com.coco52.util.RequestUtils;
+import com.qiniu.common.QiniuException;
+import com.qiniu.http.Response;
+import com.qiniu.storage.Configuration;
+import com.qiniu.storage.Region;
+import com.qiniu.storage.UploadManager;
+import com.qiniu.storage.model.DefaultPutRet;
+import com.qiniu.util.Auth;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,9 +39,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.List;
@@ -42,27 +47,31 @@ import java.util.List;
 @Service
 @DS("master")
 public class UserServiceImpl implements UserService {
-    @Autowired
-    private UserMapper userMapper;
-    @Autowired
-    private AccountMapper accountMapper;
-    @Autowired
-    private UserDetailsService userDetailsService;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private RoleAccountMapper roleAccountMapper;
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    private final UserMapper userMapper;
+    private final AccountMapper accountMapper;
+    private final UserDetailsService userDetailsService;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private RequestUtils requestUtils;
+    private final RoleAccountMapper roleAccountMapper;
+    private final JwtTokenUtil jwtTokenUtil;
+
+    private final RequestUtils requestUtils;
 
     @Value("${jwt.tokenHead}")
     private String tokenHead;
     @Value("${jwt.tokenHeader}")
     private String tokenHeader;
+
+    public UserServiceImpl(UserMapper userMapper, AccountMapper accountMapper, UserDetailsService userDetailsService, PasswordEncoder passwordEncoder, RoleAccountMapper roleAccountMapper, JwtTokenUtil jwtTokenUtil, RequestUtils requestUtils) {
+        this.userMapper = userMapper;
+        this.accountMapper = accountMapper;
+        this.userDetailsService = userDetailsService;
+        this.passwordEncoder = passwordEncoder;
+        this.roleAccountMapper = roleAccountMapper;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.requestUtils = requestUtils;
+    }
 
     /**
      * 注册账号  操作两个数据库表  user表 account表
@@ -73,6 +82,7 @@ public class UserServiceImpl implements UserService {
      * @return 1注册成功  0注册失败  2账号已被注册
      */
     @Transactional(rollbackFor = Exception.class)
+    @Override
     public RespResult registerUser(Account registerUser) {
         QueryWrapper<Account> wrapper = new QueryWrapper<>();
         wrapper.eq("username", registerUser.getUsername());
@@ -105,12 +115,13 @@ public class UserServiceImpl implements UserService {
      * 1  用户登录成功
      * 2  用户密码错误
      */
+    @SuppressWarnings("AlibabaCollectionInitShouldAssignCapacity")
     @Override
     public RespResult login(Account loginAccount) {
         if (loginAccount == null || StringUtils.isEmpty(loginAccount.getUsername()) || StringUtils.isEmpty(loginAccount.getPassword())) {
             return RespResult.fail("请提交完整信息哦~");
         }
-        UserDetails userDetails = null;
+        UserDetails userDetails;
         try {
             userDetails = userDetailsService.loadUserByUsername(loginAccount.getUsername());
         } catch (UsernameNotFoundException e) {
@@ -146,6 +157,7 @@ public class UserServiceImpl implements UserService {
         updateUser.setLastLoginTime(localDateTime);
         userMapper.update(updateUser, new QueryWrapper<MyUser>().eq("uuid", user.getUuid()));
 
+        //noinspection AlibabaCollectionInitShouldAssignCapacity
         Map<String, String> tokenMap = new HashMap<>();
         tokenMap.put("token", token);
         tokenMap.put("tokenHead", tokenHead);
@@ -162,39 +174,30 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public MyUser selectByAccount(Account loginAccount) {
-        QueryWrapper<Account> accountWrapper = new QueryWrapper();
-        if (loginAccount.getUsername() != null || loginAccount.getUsername() != "") {
-            accountWrapper.eq("username", loginAccount.getUsername());
-        } else if (loginAccount.getPassword() != null || loginAccount.getPassword() != "") {
-            accountWrapper.eq("password", loginAccount.getPassword());
-        }
+        QueryWrapper<Account> accountWrapper = new QueryWrapper<>();
+        accountWrapper.eq("username", loginAccount.getUsername());
+        accountWrapper.eq("password", loginAccount.getPassword());
         Account account = accountMapper.selectOne(accountWrapper);
         if (account == null) {
             return null;
         }
         QueryWrapper<MyUser> userWrapper = new QueryWrapper<>();
         userWrapper.eq("uuid", account.getUuid());
-        MyUser myUser = userMapper.selectOne(userWrapper);
-        return myUser;
-    }
 
+        return userMapper.selectOne(userWrapper);
+    }
     /**
      * 根据用户名查询Account
-     * @param username
-     * @return
      */
     @Override
     public Account selectByUsername(String username) {
-        QueryWrapper<Account> accountWrapper = new QueryWrapper();
+        QueryWrapper<Account> accountWrapper = new QueryWrapper<>();
         accountWrapper.eq("username", username);
-        Account account = accountMapper.selectOne(accountWrapper);
-        return account;
+        return accountMapper.selectOne(accountWrapper);
     }
 
     /**
      * 封禁用户-> 将数据库 lock 设为true
-     * @param myUser
-     * @return
      */
     @Override
     public RespResult banUser(MyUser myUser) {
@@ -214,7 +217,6 @@ public class UserServiceImpl implements UserService {
      * 删除用户->伪删除 将available 设置为true 即不能使用
      *
      * @param myUser 用户实体  此参数内uuid不能为空
-     * @return
      */
     @Override
     public RespResult delUser(MyUser myUser) {
@@ -230,8 +232,6 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 根据uuid 更新用户信息
-     * @param myUser
-     * @return
      */
     @Override
     public RespResult updateUser(MyUser myUser,HttpServletRequest request) {
@@ -272,28 +272,24 @@ public class UserServiceImpl implements UserService {
         List<JSONObject> list = new ArrayList<>();
 
 
-        for (int i = 0; i < files.length; i++) {
+        for (MultipartFile file : files) {
             //初始化对象
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("state", false);
             //获取远程的文件名
-            String originalFilename = files[i].getOriginalFilename();
+            String originalFilename = file.getOriginalFilename();
             jsonObject.put("fileName", originalFilename);
             String realName = null;
             try {
                 //保存文件
-                realName = FileUtils.saveFile(files[i]);
-            } catch (FileNotFoundException e) {
+                realName = FileUtils.saveFile(file);
+            } catch (FileNotFoundException | FileUploadException e) {
                 //文件为空抛出此异常
                 jsonObject.put("exception", e.getMessage());
-                continue;
-//                return RespResult.fail(ResultCode.FILE_UPLOAD_ERROR.getCode(), ResultCode.FILE_UPLOAD_ERROR.getMessage(), null);
-            } catch (FileUploadException e) {
-                // 文件太大或文件写入 抛出此异常
-                jsonObject.put("exception", e.getMessage());
-                continue;
-//                return RespResult.fail(ResultCode.FILE_UPLOAD_ERROR.getCode(), e.getMessage(), null);
-            } finally {
+                //                return RespResult.fail(ResultCode.FILE_UPLOAD_ERROR.getCode(), ResultCode.FILE_UPLOAD_ERROR.getMessage(), null);
+            } // 文件太大或文件写入 抛出此异常
+            //                return RespResult.fail(ResultCode.FILE_UPLOAD_ERROR.getCode(), e.getMessage(), null);
+            finally {
                 if (jsonObject.containsKey("exception")) {
                     list.add(jsonObject);
                 } else {
@@ -304,7 +300,7 @@ public class UserServiceImpl implements UserService {
                 }
             }
         }
-        Integer successNum = 0;
+        int successNum = 0;
         for (JSONObject jsonObject : list) {
             boolean state = (boolean) jsonObject.get("state");
             if (state) {
@@ -323,14 +319,11 @@ public class UserServiceImpl implements UserService {
     /**
      * 上传头像  根据Header内token获取uuid 设置头像
      *
-     * @param request
-     * @param avatar
-     * @return
      */
     @Override
     public RespResult setAvatar(HttpServletRequest request, MultipartFile avatar) {
         String uuid = requestUtils.getUUIDFromRequest(request);
-        String realName = null;
+        String realName;
         try {
             realName = FileUtils.saveFile(avatar);
         } catch (Exception e) {
@@ -348,6 +341,52 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    /**
+     * 上传头像  根据Header内token获取uuid 设置头像
+     *
+     */
+    @Override
+    public RespResult setAvatar2(HttpServletRequest request, MultipartFile avatar) {
+        String uuid = requestUtils.getUUIDFromRequest(request);
+        //构造一个带指定 Region 对象的配置类
+        Configuration cfg = new Configuration(Region.region1());
+        //...其他参数参考类注释
+        UploadManager uploadManager = new UploadManager(cfg);
+        //...生成上传凭证，然后准备上传
+        String accessKey = "ZCorfCyvLFPyIBFSD306B-KwllQyh7A6G6C5s47o";
+        String secretKey = "CAB-uxqvQUPGZyJFkiLa59MIOSrF-7lBFYuzqhdY";
+        String bucket = "82coco";
+        String key= "avatar/"+FileUtils.getMd5(avatar);
+        try {
+
+            Auth auth = Auth.create(accessKey, secretKey);
+            String upToken = auth.uploadToken(bucket);
+            try {
+                Response response = uploadManager.put(avatar.getInputStream(),key,upToken,null, null);
+                //解析上传成功的结果
+//                DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
+                DefaultPutRet putRet = JSONObject.parseObject(response.bodyString(), DefaultPutRet.class);
+                System.out.println(putRet.key);
+                System.out.println(putRet.hash);
+                UpdateWrapper<MyUser> wrapper = new UpdateWrapper<>();
+                wrapper.eq("uuid", uuid);
+                MyUser myUser = new MyUser();
+                myUser.setAvatar(putRet.key);
+                int update = userMapper.update(myUser, wrapper);
+                return update == 1 ?
+                        RespResult.success(ResultCode.USER_AVATAR_UPLOAD_SUCCESS, null) :
+                        RespResult.fail(ResultCode.USER_AVATAR_UPLOAD_ERROR, null);
+
+            } catch (QiniuException ex) {
+                Response r = ex.response;
+                System.err.println(r.toString());
+                return RespResult.fail(ResultCode.USER_AVATAR_UPLOAD_ERROR, r.toString());
+            }
+        } catch (IOException e) {
+            return RespResult.fail(ResultCode.USER_AVATAR_UPLOAD_ERROR, e.getMessage());
+        }
+    }
+
     @Override
     public BufferedImage getAvatar(String uuid) {
         QueryWrapper<MyUser> wrapper = new QueryWrapper<>();
@@ -360,12 +399,12 @@ public class UserServiceImpl implements UserService {
             return null;
         }
 //        \2021\09\24\ed729425-4afb-42f1-b561-549aef3b98aa.png
-        File file =new File(FileUtils.uploadDir+myUser.getAvatar());
+        File file =new File(FileUtils.UPLOAD_DIR+myUser.getAvatar());
         if (!file.exists()){
             return null;
         }
 
-        BufferedImage bufferedImage =null;
+        BufferedImage bufferedImage;
         try {
             bufferedImage=ImageIO.read(file);
         } catch (IOException e) {

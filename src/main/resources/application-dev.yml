@@ -18,15 +18,15 @@ spring:
         master:
 #          type: com.zaxxer.hikari.HikariDataSource
 #          driver-class-name: com.mysql.cj.jdbc.Driver
-          driver-class-name: com.mysql.jdbc.Driver
-          url: jdbc:mysql://192.168.1.39:30306/blog?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://121.37.14.30:3306/blog?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
           username: root
-          password: Flik1513.
+          password: flik0424
         words:
           driver-class-name: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://192.168.1.39:30306/thesaurus?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+          url: jdbc:mysql://121.37.14.30:3306/thesaurus?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
           username: root
-          password: Flik1513.
+          password: flik0424
   # thymeleaf模板格式
   thymeleaf:
     cache: false

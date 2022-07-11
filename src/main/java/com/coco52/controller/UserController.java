@@ -135,7 +135,7 @@ public class UserController {
     @PreAuthorize("hasAnyAuthority('admin','secretary','user')")
     public RespResult setAvatar(HttpServletRequest request,@RequestParam("avatar") MultipartFile avatar){
 
-        RespResult respResult=userService.setAvatar(request,avatar);
+        RespResult respResult=userService.setAvatar2(request,avatar);
         return respResult;
     }
 

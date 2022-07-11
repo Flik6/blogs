@@ -21,7 +21,6 @@ public class UtilController {
     public RespResult sign(@RequestBody SignIn signIn, HttpServletRequest request) {
         RespResult sign = utilService.sign(signIn.getUrl(), signIn.getUserId(),request);
         return sign;
-//        return RespMsg.success("111");
     }
 
     @PostMapping("/parse")
@@ -29,8 +28,9 @@ public class UtilController {
     public RespResult parse(@RequestBody String jsons) {
         RespResult sign = utilService.parseJson(jsons);
         return sign;
-//        return RespMsg.success("111");
     }
+
+
 
 
 }

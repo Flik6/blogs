@@ -35,7 +35,7 @@ public class CampusTodayServiceImpl implements CampusTodayService {
         queryWrapper.eq("username", user.getUsername());
         SchoolUser schoolUser = schoolUserMapper.selectOne(queryWrapper);
         if (StringUtils.isEmpty(schoolUser)) {
-            user.setCreateTime(new Timestamp(new Date().getTime()));
+            user.setCreateTime(new Timestamp(System.currentTimeMillis()));
             System.out.println(user);
             int insert = schoolUserMapper.insert(user);
             return insert == 1 ? RespResult.success("任务创建成功！") : RespResult.fail("任务创建失败！请检查信息是否填写错误");

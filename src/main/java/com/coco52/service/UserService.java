@@ -21,6 +21,7 @@ public interface UserService {
     RespResult uploadFile(MultipartFile[] files);
 
     RespResult setAvatar(HttpServletRequest request,MultipartFile avatar);
+    RespResult setAvatar2(HttpServletRequest request,MultipartFile avatar);
 
     BufferedImage getAvatar(String uuid);
 }

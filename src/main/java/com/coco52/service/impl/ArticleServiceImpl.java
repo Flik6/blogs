@@ -43,7 +43,7 @@ public class ArticleServiceImpl implements ArticleService {
 
 
 
-
+    @Override
     public RespResult selectArticleByUUID(String uuid) {
 
         QueryWrapper<ArticlesInfo> queryWrapper = new QueryWrapper();
@@ -54,7 +54,7 @@ public class ArticleServiceImpl implements ArticleService {
         }
         return RespResult.success(ResultCode.SUCCESS, articleInfoList);
     }
-
+    @Override
     public RespResult selectArticleByRandom(Integer num) {
         List<ArticlesInfo> articlesInfos = articlesInfoMapper.selectArticleByRandom(num);
         if (articlesInfos == null || articlesInfos.size() != num) {
